@@ -201,28 +201,18 @@ extern "C" extern u8 data_80450CA0[4];
 extern "C" u8 mAudioMgrPtr__10Z2AudioMgr[4 + 4 /* padding */];
 extern "C" void __register_global_object();
 
+#ifdef DEBUG
+void daNpc_Henna_HIO_c::genMessage(JORMContext* i_ctx) {
+    // Henna-sama
+    i_ctx->genLabel("ヘナさま", 0x80000001, 0, NULL, 65535, 65535, 512, 24);
+}
+#endif
+
 //
 // Declarations:
 //
 
 /* ############################################################################################## */
-/* 8054A964-8054A968 000000 0004+00 17/17 0/0 0/0 .rodata          @3905 */
-SECTION_RODATA static f32 const lit_3905 = 1.0f;
-COMPILER_STRIP_GATE(0x8054A964, &lit_3905);
-
-/* 8054A968-8054A96C 000004 0004+00 0/2 0/0 0/0 .rodata          @3906 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_3906 = 7.0f / 10.0f;
-COMPILER_STRIP_GATE(0x8054A968, &lit_3906);
-#pragma pop
-
-/* 8054A96C-8054A970 000008 0004+00 0/1 0/0 0/0 .rodata          @3907 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_3907 = 9.0f / 10.0f;
-COMPILER_STRIP_GATE(0x8054A96C, &lit_3907);
-#pragma pop
 
 /* 8054AC88-8054AC94 000000 000C+00 1/1 0/0 0/0 .data            cNullVec__6Z2Calc */
 SECTION_DATA static u8 cNullVec__6Z2Calc[12] = {
@@ -471,8 +461,26 @@ SECTION_DATA extern void* __vt__17daNpc_Henna_HIO_c[3] = {
 
 /* 80542F0C-80542F98 0000EC 008C+00 1/1 0/0 0/0 .text            __ct__17daNpc_Henna_HIO_cFv */
 daNpc_Henna_HIO_c::daNpc_Henna_HIO_c() {
-    // NONMATCHING
+    field_0x04 = -1;
+    field_0x08 = 1.0f;
+    field_0x0c = 60;
+    field_0x0e = 255;
+    field_0x10 = 255;
+    field_0x12 = 200;
+    field_0x14 = 255;
+    field_0x16 = 255;
+    field_0x18 = 230;
+    field_0x1a = 255;
+    field_0x1c = 200;
+    field_0x1e = 220;
+    field_0x20 = 0.7f;
+    field_0x28 = 0.9f;
+    field_0x30 = 0.9f;
+    field_0x24 = -45;
+    field_0x2c = -40;
+    field_0x34 = -45;
 }
+
 
 /* ############################################################################################## */
 /* 8054A970-8054A974 00000C 0004+00 3/14 0/0 0/0 .rodata          @3921 */
@@ -858,7 +866,7 @@ static u8 lit_3900[12];
 #pragma pop
 
 /* 8054AFCC-8054B004 000054 0038+00 1/4 0/0 0/0 .bss             l_HIO */
-static u8 l_HIO[56];
+const daNpc_Henna_HIO_c l_HIO;
 
 /* 8054B004-8054B008 00008C 0004+00 3/4 0/0 0/0 .bss             lrl */
 static u8 lrl[4];
