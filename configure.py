@@ -1834,7 +1834,7 @@ config.libs = [
     ActorRel(Equivalent, "d_a_obj_Turara"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_TvCdlst"),
     ActorRel(Equivalent, "d_a_obj_Y_taihou"), # weak func ordering.
-    ActorRel(NonMatching, "d_a_obj_amiShutter"),
+    ActorRel(Equivalent, "d_a_obj_amiShutter"), # function ordr
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_ari"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_automata"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_avalanche"),
@@ -2053,7 +2053,7 @@ config.libs = [
     ActorRel(NonMatching, "d_a_obj_scannon"),
     ActorRel(NonMatching, "d_a_obj_scannon_crs"),
     ActorRel(NonMatching, "d_a_obj_scannon_ten"),
-    ActorRel(NonMatching, "d_a_obj_sekidoor"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_obj_sekidoor"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_sekizo"),
     ActorRel(NonMatching, "d_a_obj_sekizoa"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_shield"),
