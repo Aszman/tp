@@ -15,82 +15,82 @@
 // Forward References:
 //
 
-extern "C" void __ct__17daNpc_Henna_HIO_cFv();
-extern "C" static void anm_init__FP15npc_henna_classifUcf();
-extern "C" static void nodeCallBack__FP8J3DJointi();
-extern "C" static void daNpc_Henna_Draw__FP15npc_henna_class();
-extern "C" void __dt__4cXyzFv();
-extern "C" void __dt__8cM3dGPlaFv();
-extern "C" static void s_npc_sub__FPvPv();
-extern "C" static void s_piro_sub__FPvPv();
-extern "C" static void s_du_sub__FPvPv();
-extern "C" static void s_shop_sub__FPvPv();
-extern "C" static void s_koro2ball_sub__FPvPv();
-extern "C" static void message_shop__FP15npc_henna_class();
-extern "C" static void henna_shop__FP15npc_henna_class();
-extern "C" static void s_rod_sub__FPvPv();
-extern "C" static void s_fish_sub__FPvPv();
-extern "C" static void henna_ride__FP15npc_henna_class();
-extern "C" static void action__FP15npc_henna_class();
-extern "C" static void cam_3d_morf__FP15npc_henna_classf();
-extern "C" static void demo_camera__FP15npc_henna_class();
-extern "C" static void zoom_check__FP15npc_henna_classP4cXyzs();
-extern "C" static void demo_camera_shop__FP15npc_henna_class();
-extern "C" static void message_guide__FP15npc_henna_class();
-extern "C" static void s_boat_sub__FPvPv();
-extern "C" static void env_control__FP15npc_henna_class();
-extern "C" static void daNpc_Henna_Execute__FP15npc_henna_class();
-extern "C" static bool daNpc_Henna_IsDelete__FP15npc_henna_class();
-extern "C" static void daNpc_Henna_Delete__FP15npc_henna_class();
-extern "C" static void useHeapInit__FP10fopAc_ac_c();
-extern "C" void __dt__12J3DFrameCtrlFv();
-extern "C" static void daNpc_Henna_Create__FP10fopAc_ac_c();
-extern "C" void __dt__17daNpc_Henna_HIO_cFv();
-extern "C" void cancelOriginalDemo__9daPy_py_cFv();
-extern "C" void __ct__4cXyzFRC4cXyz();
-extern "C" static void mDoAud_seStart__FUlPC3VecUlSc();
-extern "C" void getSubStickX__8mDoCPd_cFUl();
-extern "C" void getStickX3D__8mDoCPd_cFUl();
-extern "C" static void dComIfGp_setDoStatusForce__FUcUc();
-extern "C" static void dComIfGs_setEventReg__FUsUc();
-extern "C" static void Z2GetAudioMgr__Fv();
-extern "C" static void dComIfG_getTimerPtr__Fv();
-extern "C" void fadeIn__13mDoGph_gInf_cFfR8_GXColor();
-extern "C" static void fpcM_Search__FPFPvPv_PvPv();
-extern "C" void getTrigA__8mDoCPd_cFUl();
-extern "C" static void dComIfGp_event_reset__Fv();
-extern "C" void offPlayerNoDraw__9daPy_py_cFv();
-extern "C" static void dComIfGp_setMessageCountNumber__Fl();
-extern "C" static void dComIfGp_event_offHindFlag__FUs();
-extern "C" static void dKy_getEnvlight__Fv();
-extern "C" static void cMtx_XrotM__FPA4_fs();
-extern "C" void abs__4cXyzCFv();
-extern "C" void onPlayerNoDraw__9daPy_py_cFv();
-extern "C" static void dComIfGp_setItemRupeeCount__Fl();
-extern "C" static void dComIfGs_getRupee__Fv();
-extern "C" void fabsf__3stdFf();
-extern "C" void set__4cXyzFfff();
-extern "C" void __apl__4cXyzFRC3Vec();
-extern "C" static void cMtx_YrotS__FPA4_fs();
-extern "C" void changeDemoMode__9daPy_py_cFUliis();
-extern "C" void changeOriginalDemo__9daPy_py_cFv();
-extern "C" static void daPy_getPlayerActorClass__Fv();
-extern "C" void onCondition__11dEvt_info_cFUs();
-extern "C" void checkCommandDemoAccrpt__11dEvt_info_cFv();
-extern "C" void __as__4cXyzFRC4cXyz();
-extern "C" static void dComIfGp_checkPlayerStatus0__FiUl();
-extern "C" static void JMAFastSqrt__Ff();
-extern "C" static void dComIfGs_getEventReg__FUs();
-extern "C" static void dComIfGs_isEventBit__FUs();
-extern "C" static void dComIfGp_event_runCheck__Fv();
-extern "C" void __ct__4cXyzFv();
-extern "C" static void dComIfGp_getCamera__Fi();
-extern "C" static void dComIfGp_getPlayerCameraID__Fi();
-extern "C" static void dComIfGp_getPlayer__Fi();
-extern "C" static void dMsgObject_getSelectCursorPos__Fv();
-extern "C" static void fopAcM_GetRoomNo__FPC10fopAc_ac_c();
-extern "C" static void dComIfGs_onEventBit__FUs();
-extern "C" extern char const* const d_a_npc_henna__stringBase0;
+// extern "C" void __ct__17daNpc_Henna_HIO_cFv();
+// extern "C" void anm_init__FP15npc_henna_classifUcf();
+// extern "C" void nodeCallBack__FP8J3DJointi();
+extern "C"  void daNpc_Henna_Draw__FP15npc_henna_class();
+// extern "C" void __dt__4cXyzFv();
+// extern "C" void __dt__8cM3dGPlaFv();
+// extern "C" void s_npc_sub__FPvPv();
+// extern "C" void s_piro_sub__FPvPv();
+// extern "C" void s_du_sub__FPvPv();
+// extern "C" void s_shop_sub__FPvPv();
+// extern "C" void s_koro2ball_sub__FPvPv();
+// extern "C" void message_shop__FP15npc_henna_class();
+extern "C" void henna_shop__FP15npc_henna_class();
+// extern "C" void s_rod_sub__FPvPv();
+// extern "C" void s_fish_sub__FPvPv();
+extern "C" void henna_ride__FP15npc_henna_class();
+// extern "C" void action__FP15npc_henna_class();
+// extern "C" void cam_3d_morf__FP15npc_henna_classf();
+// extern "C" void demo_camera__FP15npc_henna_class();
+// extern "C" void zoom_check__FP15npc_henna_classP4cXyzs();
+extern "C"  void demo_camera_shop__FP15npc_henna_class();
+// extern "C" void message_guide__FP15npc_henna_class();
+// extern "C" void s_boat_sub__FPvPv();
+// extern "C" void env_control__FP15npc_henna_class();
+extern "C"  void daNpc_Henna_Execute__FP15npc_henna_class();
+extern "C"  bool daNpc_Henna_IsDelete__FP15npc_henna_class();
+extern "C"  void daNpc_Henna_Delete__FP15npc_henna_class();
+// extern "C" void useHeapInit__FP10fopAc_ac_c();
+// extern "C" void __dt__12J3DFrameCtrlFv();
+extern "C"  void daNpc_Henna_Create__FP10fopAc_ac_c();
+// extern "C" void __dt__17daNpc_Henna_HIO_cFv();
+// extern "C" void cancelOriginalDemo__9daPy_py_cFv();
+// extern "C" void __ct__4cXyzFRC4cXyz();
+// extern "C" void mDoAud_seStart__FUlPC3VecUlSc();
+// extern "C" void getSubStickX__8mDoCPd_cFUl();
+// extern "C" void getStickX3D__8mDoCPd_cFUl();
+// extern "C" void dComIfGp_setDoStatusForce__FUcUc();
+// extern "C" void dComIfGs_setEventReg__FUsUc();
+// extern "C" void Z2GetAudioMgr__Fv();
+// extern "C" void dComIfG_getTimerPtr__Fv();
+// extern "C" void fadeIn__13mDoGph_gInf_cFfR8_GXColor();
+// extern "C" void fpcM_Search__FPFPvPv_PvPv();
+// extern "C" void getTrigA__8mDoCPd_cFUl();
+// extern "C" void dComIfGp_event_reset__Fv();
+// extern "C" void offPlayerNoDraw__9daPy_py_cFv();
+// extern "C" void dComIfGp_setMessageCountNumber__Fl();
+// extern "C" void dComIfGp_event_offHindFlag__FUs();
+// extern "C" void dKy_getEnvlight__Fv();
+// extern "C" void cMtx_XrotM__FPA4_fs();
+// extern "C" void abs__4cXyzCFv();
+// extern "C" void onPlayerNoDraw__9daPy_py_cFv();
+// extern "C" void dComIfGp_setItemRupeeCount__Fl();
+// extern "C" void dComIfGs_getRupee__Fv();
+// extern "C" void fabsf__3stdFf();
+// extern "C" void set__4cXyzFfff();
+// extern "C" void __apl__4cXyzFRC3Vec();
+// extern "C" void cMtx_YrotS__FPA4_fs();
+// extern "C" void changeDemoMode__9daPy_py_cFUliis();
+// extern "C" void changeOriginalDemo__9daPy_py_cFv();
+// extern "C" void daPy_getPlayerActorClass__Fv();
+// extern "C" void onCondition__11dEvt_info_cFUs();
+// extern "C" void checkCommandDemoAccrpt__11dEvt_info_cFv();
+// extern "C" void __as__4cXyzFRC4cXyz();
+// extern "C" void dComIfGp_checkPlayerStatus0__FiUl();
+// extern "C" void JMAFastSqrt__Ff();
+// extern "C" void dComIfGs_getEventReg__FUs();
+// extern "C" void dComIfGs_isEventBit__FUs();
+// extern "C" void dComIfGp_event_runCheck__Fv();
+// extern "C" void __ct__4cXyzFv();
+// extern "C" void dComIfGp_getCamera__Fi();
+// extern "C" void dComIfGp_getPlayerCameraID__Fi();
+// extern "C" void dComIfGp_getPlayer__Fi();
+// extern "C" void dMsgObject_getSelectCursorPos__Fv();
+// extern "C" void fopAcM_GetRoomNo__FPC10fopAc_ac_c();
+// extern "C" void dComIfGs_onEventBit__FUs();
+// extern "C" extern char const* const d_a_npc_henna__stringBase0;
 
 //
 // External References:
@@ -195,12 +195,12 @@ extern "C" void _restgpr_29();
 extern "C" u8 saveBitLabels__16dSv_event_flag_c[1644 + 4 /* padding */];
 extern "C" u8 m_cpadInfo__8mDoCPd_c[256];
 extern "C" u8 now__14mDoMtx_stack_c[48];
-extern "C" extern u8 g_Counter[12 + 4 /* padding */];
+extern "C"  u8 g_Counter[12 + 4 /* padding */];
 extern "C" u8 mCurrentMtx__6J3DSys[48];
 extern "C" u8 sincosTable___5JMath[65536];
-extern "C" extern u8 struct_80450C98[4];
-extern "C" extern u8 cDmr_SkipInfo[4];
-extern "C" extern u8 data_80450CA0[4];
+extern "C"  u8 struct_80450C98[4];
+extern "C"  u8 cDmr_SkipInfo[4];
+extern "C"  u8 data_80450CA0[4];
 extern "C" u8 mAudioMgrPtr__10Z2AudioMgr[4 + 4 /* padding */];
 extern "C" void __register_global_object();
 
@@ -240,22 +240,22 @@ SECTION_DATA static u8 check_kind[8] = {
     0xF5, 0x7F, 0xF4, 0x7F, 0xF3, 0x7F, 0xF2, 0x7F,
 };
 
-/* 8054ACB0-8054ACE4 -00001 0034+00 1/1 0/0 0/0 .data            @4437 */
-SECTION_DATA static void* lit_4437[13] = {
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x48),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x74),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x7C),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x98),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0xF8),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x110),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x334),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x334),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x334),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x334),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x154),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x204),
-    (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x2B4),
-};
+// /* 8054ACB0-8054ACE4 -00001 0034+00 1/1 0/0 0/0 .data            @4437 */
+// SECTION_DATA static void* lit_4437[13] = {
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x48),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x74),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x7C),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x98),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0xF8),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x110),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x334),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x334),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x334),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x334),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x154),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x204),
+//     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x2B4),
+// };
 
 /* 8054ACE4-8054AD14 -00001 0030+00 1/1 0/0 0/0 .data            @4753 */
 SECTION_DATA static void* lit_4753[12] = {
@@ -389,30 +389,35 @@ SECTION_DATA static void* lit_5824[82] = {
 };
 
 /* 8054AEB4-8054AEC0 00022C 000C+00 0/1 0/0 0/0 .data            btk_d$6463 */
-#pragma push
-#pragma force_active on
-SECTION_DATA static u8 btk_d[12] = {
-    0x00, 0x00, 0x00, 0x29, 0x00, 0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x2B,
+static u32 btk_d[3] = {
+    npc_henna_class::BTK_HENNA,
+    npc_henna_class::BTK_HENNA_NECK_A,
+    npc_henna_class::BTK_HENNA_SENAKA_A
 };
-#pragma pop
 
 /* 8054AEC0-8054AEE0 000238 0020+00 0/1 0/0 0/0 .data            btp_d$6474 */
-#pragma push
-#pragma force_active on
-SECTION_DATA static u8 btp_d[32] = {
-    0x00, 0x00, 0x00, 0x2E, 0x00, 0x00, 0x00, 0x35, 0x00, 0x00, 0x00, 0x32, 0x00, 0x00, 0x00, 0x33,
-    0x00, 0x00, 0x00, 0x2E, 0x00, 0x00, 0x00, 0x34, 0x00, 0x00, 0x00, 0x31, 0x00, 0x00, 0x00, 0x31,
+static u32 btp_d[8] = {
+    npc_henna_class::BTP_HENNA,
+    npc_henna_class::BTP_HENNA_F_SMILE_A,
+    npc_henna_class::BTP_HENNA_F_GLARE_A,
+    npc_henna_class::BTP_HENNA_F_KAYUI_A,
+    npc_henna_class::BTP_HENNA,
+    npc_henna_class::BTP_HENNA_F_SMILETALK_A,
+    npc_henna_class::BTP_HENNA_F_GLARETALK_A,
+    npc_henna_class::BTP_HENNA_F_GLARETALK_A
 };
-#pragma pop
 
 /* 8054AEE0-8054AF00 000258 0020+00 0/1 0/0 0/0 .data            facebck_d$6485 */
-#pragma push
-#pragma force_active on
-SECTION_DATA static u8 facebck_d[32] = {
-    0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x0D,
-    0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x00, 0x00, 0x0B,
+static u32 facebck_d[8] = {
+    npc_henna_class::ANIM_F_WAIT_A,
+    npc_henna_class::ANIM_F_SMILE_A,
+    npc_henna_class::ANIM_F_GLARE_A,
+    npc_henna_class::ANIM_F_KAYUI_A,
+    npc_henna_class::ANIM_F_TALK_A,
+    npc_henna_class::ANIM_F_SMILETALK_A,
+    npc_henna_class::ANIM_F_GLARE_TALK_A,
+    npc_henna_class::ANIM_F_GLARE_TALK_A,
 };
-#pragma pop
 
 /* 8054AF00-8054AF20 -00001 0020+00 1/0 0/0 0/0 .data            l_daNpc_Henna_Method */
 static actor_method_class l_daNpc_Henna_Method = {
@@ -611,11 +616,6 @@ static void* s_koro2ball_sub(void* i_actor, void* i_data) {
 
 /* ############################################################################################## */
 
-#ifdef DEBUG
-#define  BIT 66
-#else
-#define  BIT 10
-#endif
 
 /* 80543844-8054395C 000A24 0118+00 1/1 0/0 0/0 .text            message_shop__FP15npc_henna_class */
 static void message_shop(npc_henna_class* i_this) {
@@ -627,12 +627,12 @@ static void message_shop(npc_henna_class* i_this) {
     
     if (i_this->field_0x750 != 0) {
         fopAcM_OffStatus(i_this, 0);
-        cLib_offBit<u32>(i_this->attention_info.flags, BIT);
+        cLib_offBit<u32>(i_this->attention_info.flags, 0xa);
         return;
     }
 
     fopAcM_OnStatus(i_this, 0);
-    cLib_onBit<u32>(i_this->attention_info.flags, BIT);
+    cLib_onBit<u32>(i_this->attention_info.flags, 0xa);
     i_this->attention_info.distances[1] = 4;
     i_this->attention_info.distances[3] = 4;
     i_this->eventInfo.onCondition(1);
@@ -642,76 +642,142 @@ static void message_shop(npc_henna_class* i_this) {
     }
 }
 
+static u8 s_Val;
+
 /* 8054395C-80543E68 000B3C 050C+00 2/2 0/0 0/0 .text            henna_shop__FP15npc_henna_class */
-static void henna_shop(npc_henna_class* param_0) {
-    // NONMATCHING
+static void henna_shop(npc_henna_class* i_this) {
+    s16 res = 2048;
+    switch (i_this->field_0x6a4) {
+    case 0:
+        anm_init(i_this, npc_henna_class::ANIM_SITWALK_A, 1.0f, 2, 1.0f);
+        i_this->current.angle.y = -32768;
+        i_this->shape_angle.y = -32768;
+        i_this->field_0x618 = -32768;
+        i_this->field_0x6a4 = 1;
+    case 1:
+        res = 0;
+        break;
+    case 2:
+        anm_init(i_this, npc_henna_class::ANIM_STANDUP_A, 0.0f, 0, 1.0f);
+        i_this->field_0x6a4 = 3;
+    case 3:
+        if (i_this->mAnmID == npc_henna_class::ANIM_STANDUP_A && i_this->mpMorf->isStop()) {
+            anm_init(i_this, npc_henna_class::ANIM_WAIT_A, 10.0f, 2, 1.0f);
+            i_this->field_0x6a4 = 5;
+        }
+        break;
+    case 4:
+        if (i_this->field_0x6a0 > 80) {
+            i_this->field_0x6a4 = 2;
+        }
+        break;
+    case 5:
+        if (i_this->field_0x752 != 0) {
+            i_this->field_0x746 = 1000.0f + cM_rndF(1000.0f);
+        }
+        if (i_this->field_0x746 == 1) {
+            i_this->field_0x6a4 = 10;
+        }
+        break;
+    case 10:
+        if (cM_rndF(1.0f) < 0.5f || i_this->field_0x708 != 0) {
+            anm_init(i_this, npc_henna_class::ANIM_SENAKA_A, 3.0f, 0, 1.0f);
+            i_this->mBtkID = 2;
+            i_this->field_0x708 = 0;
+        } else {
+            anm_init(i_this, npc_henna_class::ANIM_NECK_A, 3.0f, 0, 1.0f);
+            i_this->mBtkID = 1;
+        }
+        i_this->field_0x6a4 = 11;
+        i_this->mBaseAnmID = 3;
+        i_this->field_0x698 = 0.0f;
+        i_this->mpBaseAnm1[i_this->mBaseAnmID]->setFrame(0.0f);
+        i_this->mpBaseAnm2[i_this->mBaseAnmID]->setFrame(0.0f);
+        break;
+    case 11:
+        res = 0;
+        i_this->field_0x70d = 0;
+        i_this->field_0x709 = 5;
+        if (i_this->mpMorf->isStop()) {
+            if (i_this->mAnmID == npc_henna_class::ANIM_NECK_A) {
+                anm_init(i_this, npc_henna_class::ANIM_NECKWALK_A, 0.0f, 2, 1.0f);
+            } else {
+                anm_init(i_this, npc_henna_class::ANIM_SENAKAWAIT_A, 0.0f, 2, 1.0f);
+            }
+            i_this->field_0x6a4 = 12;
+            i_this->field_0x73c = 120.0f + cM_rndF(60.0f);
+        }
+        break;
+    case 12:
+        res = 0;
+        i_this->field_0x70d = 0;
+        i_this->field_0x709 = 5;
+        if (i_this->field_0x73c == 0 || i_this->field_0x752 != 0) {
+            anm_init(i_this, npc_henna_class::ANIM_WAIT_A, 10.0f, 2, 1.0f);
+            i_this->field_0x6a4 = 5;
+            i_this->mBaseAnmID = 0;
+            i_this->mBtkID = 0;
+            i_this->field_0x698 = 0;
+            i_this->field_0x746 = 1000.0f + cM_rndF(1000.0f);
+        }
+    } 
+
+    s16 diff = i_this->field_0x620 - i_this->shape_angle.y;
+    if (diff > 8192 || diff < -8192) {
+        if (diff > 0) {
+            i_this->field_0x618 = diff - 8192;
+        } else {
+            i_this->field_0x618 = diff + 8192;
+        }
+    }
+    
+    if (i_this->field_0x752 >= 80 && i_this->field_0x754 > 10) {
+        i_this->field_0x618 = cM_atan2s(-661.0f - i_this->current.pos.x, 376.0f -  i_this->current.pos.z);
+    }
+
+    cLib_addCalcAngleS2(&i_this->current.angle.y, i_this->field_0x618, 2, res);
+    if ((!dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[461]) || s_Val != 0) && i_this->field_0x7d7 == 0 && i_this->field_0x6a0 == TREG_S(7) + 56) {
+        dComIfGp_event_reset();
+        if (s_Val != 0) {
+            s_Val = 0;
+            i_this->field_0x752 = 60;
+        } else {
+            dComIfGs_onEventBit(dSv_event_flag_c::saveBitLabels[461]);
+            i_this->field_0x752 = 1;
+        }
+        i_this->field_0x7d7 = 1;
+    }
+
+    if (i_this->field_0x742 != 0 && (i_this->field_0x742 & 1) != 0) {
+        mDoAud_seStart(79, NULL, 0, 0);
+    }
+    if (i_this->field_0x744 != 0) {
+        mDoAud_seStart(74, NULL, 0 ,0);
+    }
 }
 
 /* 80543E68-80543EB4 001048 004C+00 1/1 0/0 0/0 .text            s_rod_sub__FPvPv */
-static void s_rod_sub(void* param_0, void* param_1) {
-    // NONMATCHING
+static void* s_rod_sub(void* i_actor, void* i_data) {
+    if (fopAcM_IsActor(i_actor) && fopAcM_GetName(i_actor) == PROC_MG_ROD) {
+        return i_actor;
+    }
+    return NULL;
 }
 
 /* ############################################################################################## */
-/* 8054A9D0-8054A9D4 00006C 0004+00 0/2 0/0 0/0 .rodata          @4430 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4430 = 10.0f;
-COMPILER_STRIP_GATE(0x8054A9D0, &lit_4430);
-#pragma pop
-
-/* 8054A9D4-8054A9D8 000070 0004+00 0/1 0/0 0/0 .rodata          @4431 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4431 = 1000.0f;
-COMPILER_STRIP_GATE(0x8054A9D4, &lit_4431);
-#pragma pop
-
-/* 8054A9D8-8054A9DC 000074 0004+00 0/0 0/0 0/0 .rodata          @4432 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4432 = 3.0f;
-COMPILER_STRIP_GATE(0x8054A9D8, &lit_4432);
-#pragma pop
-
-/* 8054A9DC-8054A9E0 000078 0004+00 0/1 0/0 0/0 .rodata          @4433 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4433 = 120.0f;
-COMPILER_STRIP_GATE(0x8054A9DC, &lit_4433);
-#pragma pop
-
-/* 8054A9E0-8054A9E4 00007C 0004+00 0/0 0/0 0/0 .rodata          @4434 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4434 = 60.0f;
-COMPILER_STRIP_GATE(0x8054A9E0, &lit_4434);
-#pragma pop
-
-/* 8054A9E4-8054A9E8 000080 0004+00 0/0 0/0 0/0 .rodata          @4435 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4435 = -661.0f;
-COMPILER_STRIP_GATE(0x8054A9E4, &lit_4435);
-#pragma pop
-
-/* 8054A9E8-8054A9EC 000084 0004+00 0/0 0/0 0/0 .rodata          @4436 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4436 = 376.0f;
-COMPILER_STRIP_GATE(0x8054A9E8, &lit_4436);
-#pragma pop
-
-/* 8054A9EC-8054A9F0 000088 0004+00 0/2 0/0 0/0 .rodata          @4491 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4491 = 500.0f;
-COMPILER_STRIP_GATE(0x8054A9EC, &lit_4491);
-#pragma pop
 
 /* 80543EB4-8054403C 001094 0188+00 1/1 0/0 0/0 .text            s_fish_sub__FPvPv */
-static void s_fish_sub(void* param_0, void* param_1) {
-    // NONMATCHING
+static void* s_fish_sub(void* i_actor, void* i_data) {
+    if (fopAcM_IsActor(i_actor) && (fopAcM_GetName(i_actor) == PROC_NPC_DU || fopAcM_GetName(i_actor) == PROC_MG_FISH)){
+        fopAc_ac_c* actor_p = (fopAc_ac_c*) i_actor; 
+        npc_henna_class* data_p = (npc_henna_class*) i_data;
+        cXyz diff = actor_p->current.pos - data_p->current.pos;
+        if (diff.abs() < 500.0f + TREG_F(12)) {
+            return i_actor;
+        }
+    }
+
+    return NULL;
 }
 
 /* ############################################################################################## */
@@ -820,8 +886,20 @@ const daNpc_Henna_HIO_c l_HIO;
 static u8 lrl[4];
 
 /* 8054403C-80544A4C 00121C 0A10+00 2/1 0/0 0/0 .text            henna_ride__FP15npc_henna_class */
-static void henna_ride(npc_henna_class* param_0) {
-    // NONMATCHING
+static void henna_ride(npc_henna_class* i_this) {
+    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    f32 stickX3D = mDoCPd_c::getStickX3D(0);
+    f32 stickY = mDoCPd_c::getStickY(0);
+    i_this->field_0x70d = 2;
+    i_this->field_0x70e = 1300;
+    i_this->field_0x720 = i_this->eyePos;
+    if (dComIfGp_checkPlayerStatus0(0, 0x2000) != 0 || dComIfGp_event_runCheck()){
+        stickY = 0.0f;
+        stickX3D = 0.0f;
+    }
+    f32 sqrt = JMAFastSqrt(stickX3D*stickX3D + stickY*stickY);
+    s16 diff =  cM_atan2s(stickX3D, stickY);
+
 }
 
 /* ############################################################################################## */
@@ -2157,7 +2235,7 @@ extern "C" void __ct__4cXyzFRC4cXyz() {
 
 /* 8054A3B4-8054A418 007594 0064+00 1/1 0/0 0/0 .text            mDoAud_seStart__FUlPC3VecUlSc */
 // static void mDoAud_seStart(u32 param_0, Vec const* param_1, u32 param_2, s8 param_3) {
-extern "C" static asm void mDoAud_seStart__FUlPC3VecUlSc() {
+extern "C"  asm void mDoAud_seStart__FUlPC3VecUlSc() {
     // NONMATCHING
 }
 
@@ -2175,25 +2253,25 @@ extern "C" void getStickX3D__8mDoCPd_cFUl() {
 
 /* 8054A444-8054A458 007624 0014+00 1/1 0/0 0/0 .text            dComIfGp_setDoStatusForce__FUcUc */
 // static void dComIfGp_setDoStatusForce(u8 param_0, u8 param_1) {
-extern "C" static asm void dComIfGp_setDoStatusForce__FUcUc() {
+extern "C"  asm void dComIfGp_setDoStatusForce__FUcUc() {
     // NONMATCHING
 }
 
 /* 8054A458-8054A490 007638 0038+00 1/1 0/0 0/0 .text            dComIfGs_setEventReg__FUsUc */
 // static void dComIfGs_setEventReg(u16 param_0, u8 param_1) {
-extern "C" static asm void dComIfGs_setEventReg__FUsUc() {
+extern "C" asm void dComIfGs_setEventReg__FUsUc() {
     // NONMATCHING
 }
 
 /* 8054A490-8054A4A0 007670 0010+00 1/1 0/0 0/0 .text            Z2GetAudioMgr__Fv */
 // static void Z2GetAudioMgr() {
-extern "C" static asm void Z2GetAudioMgr__Fv() {
+extern "C" asm void Z2GetAudioMgr__Fv() {
     // NONMATCHING
 }
 
 /* 8054A4A0-8054A4CC 007680 002C+00 1/1 0/0 0/0 .text            dComIfG_getTimerPtr__Fv */
 // static void dComIfG_getTimerPtr() {
-extern "C" static asm void dComIfG_getTimerPtr__Fv() {
+extern "C" asm void dComIfG_getTimerPtr__Fv() {
     // NONMATCHING
 }
 
@@ -2206,7 +2284,7 @@ extern "C" void fadeIn__13mDoGph_gInf_cFfR8_GXColor() {
 
 /* 8054A4F0-8054A510 0076D0 0020+00 1/1 0/0 0/0 .text            fpcM_Search__FPFPvPv_PvPv */
 // static void fpcM_Search(void* (*param_0)(void*, void*), void* param_1) {
-extern "C" static asm void fpcM_Search__FPFPvPv_PvPv() {
+extern "C" asm void fpcM_Search__FPFPvPv_PvPv() {
     // NONMATCHING
 }
 
@@ -2218,7 +2296,7 @@ extern "C" void getTrigA__8mDoCPd_cFUl() {
 
 /* 8054A52C-8054A558 00770C 002C+00 1/1 0/0 0/0 .text            dComIfGp_event_reset__Fv */
 // static void dComIfGp_event_reset() {
-extern "C" static asm void dComIfGp_event_reset__Fv() {
+extern "C" asm void dComIfGp_event_reset__Fv() {
     // NONMATCHING
 }
 
@@ -2231,25 +2309,25 @@ extern "C" void offPlayerNoDraw__9daPy_py_cFv() {
 /* 8054A568-8054A578 007748 0010+00 1/1 0/0 0/0 .text            dComIfGp_setMessageCountNumber__Fl
  */
 // static void dComIfGp_setMessageCountNumber(s32 param_0) {
-extern "C" static asm void dComIfGp_setMessageCountNumber__Fl() {
+extern "C" asm void dComIfGp_setMessageCountNumber__Fl() {
     // NONMATCHING
 }
 
 /* 8054A578-8054A590 007758 0018+00 1/1 0/0 0/0 .text            dComIfGp_event_offHindFlag__FUs */
 // static void dComIfGp_event_offHindFlag(u16 param_0) {
-extern "C" static asm void dComIfGp_event_offHindFlag__FUs() {
+extern "C" asm void dComIfGp_event_offHindFlag__FUs() {
     // NONMATCHING
 }
 
 /* 8054A590-8054A59C 007770 000C+00 1/1 0/0 0/0 .text            dKy_getEnvlight__Fv */
 // static void dKy_getEnvlight() {
-extern "C" static asm void dKy_getEnvlight__Fv() {
+extern "C" asm void dKy_getEnvlight__Fv() {
     // NONMATCHING
 }
 
 /* 8054A59C-8054A5BC 00777C 0020+00 1/1 0/0 0/0 .text            cMtx_XrotM__FPA4_fs */
 // static void cMtx_XrotM(f32 (*param_0)[4], s16 param_1) {
-extern "C" static asm void cMtx_XrotM__FPA4_fs() {
+extern "C" asm void cMtx_XrotM__FPA4_fs() {
     // NONMATCHING
 }
 
@@ -2267,13 +2345,13 @@ extern "C" void onPlayerNoDraw__9daPy_py_cFv() {
 
 /* 8054A6E0-8054A6F8 0078C0 0018+00 1/1 0/0 0/0 .text            dComIfGp_setItemRupeeCount__Fl */
 // static void dComIfGp_setItemRupeeCount(s32 param_0) {
-extern "C" static asm void dComIfGp_setItemRupeeCount__Fl() {
+extern "C"  asm void dComIfGp_setItemRupeeCount__Fl() {
     // NONMATCHING
 }
 
 /* 8054A6F8-8054A708 0078D8 0010+00 1/1 0/0 0/0 .text            dComIfGs_getRupee__Fv */
 // static void dComIfGs_getRupee() {
-extern "C" static asm void dComIfGs_getRupee__Fv() {
+extern "C"  asm void dComIfGs_getRupee__Fv() {
     // NONMATCHING
 }
 
@@ -2297,7 +2375,7 @@ extern "C" void __apl__4cXyzFRC3Vec() {
 
 /* 8054A758-8054A778 007938 0020+00 1/1 0/0 0/0 .text            cMtx_YrotS__FPA4_fs */
 // static void cMtx_YrotS(f32 (*param_0)[4], s16 param_1) {
-extern "C" static asm void cMtx_YrotS__FPA4_fs() {
+extern "C"  asm void cMtx_YrotS__FPA4_fs() {
     // NONMATCHING
 }
 
@@ -2315,7 +2393,7 @@ extern "C" void changeOriginalDemo__9daPy_py_cFv() {
 
 /* 8054A7A0-8054A7B0 007980 0010+00 1/1 0/0 0/0 .text            daPy_getPlayerActorClass__Fv */
 // static void daPy_getPlayerActorClass() {
-extern "C" static asm void daPy_getPlayerActorClass__Fv() {
+extern "C"  asm void daPy_getPlayerActorClass__Fv() {
     // NONMATCHING
 }
 
@@ -2340,31 +2418,31 @@ extern "C" void __as__4cXyzFRC4cXyz() {
 /* 8054A7F0-8054A80C 0079D0 001C+00 1/1 0/0 0/0 .text            dComIfGp_checkPlayerStatus0__FiUl
  */
 // static void dComIfGp_checkPlayerStatus0(int param_0, u32 param_1) {
-extern "C" static asm void dComIfGp_checkPlayerStatus0__FiUl() {
+extern "C" asm void dComIfGp_checkPlayerStatus0__FiUl() {
     // NONMATCHING
 }
 
 /* 8054A80C-8054A828 0079EC 001C+00 1/1 0/0 0/0 .text            JMAFastSqrt__Ff */
 // static void JMAFastSqrt(f32 param_0) {
-extern "C" static asm void JMAFastSqrt__Ff() {
+extern "C" asm void JMAFastSqrt__Ff() {
     // NONMATCHING
 }
 
 /* 8054A828-8054A858 007A08 0030+00 1/1 0/0 0/0 .text            dComIfGs_getEventReg__FUs */
 // static void dComIfGs_getEventReg(u16 param_0) {
-extern "C" static asm void dComIfGs_getEventReg__FUs() {
+extern "C" asm void dComIfGs_getEventReg__FUs() {
     // NONMATCHING
 }
 
 /* 8054A858-8054A888 007A38 0030+00 1/1 0/0 0/0 .text            dComIfGs_isEventBit__FUs */
 // static void dComIfGs_isEventBit(u16 param_0) {
-extern "C" static asm void dComIfGs_isEventBit__FUs() {
+extern "C" asm void dComIfGs_isEventBit__FUs() {
     // NONMATCHING
 }
 
 /* 8054A888-8054A8A4 007A68 001C+00 1/1 0/0 0/0 .text            dComIfGp_event_runCheck__Fv */
 // static void dComIfGp_event_runCheck() {
-extern "C" static asm void dComIfGp_event_runCheck__Fv() {
+extern "C" asm void dComIfGp_event_runCheck__Fv() {
     // NONMATCHING
 }
 
@@ -2376,7 +2454,7 @@ extern "C" void __ct__4cXyzFv() {
 
 /* 8054A8A8-8054A8C0 007A88 0018+00 1/1 0/0 0/0 .text            dComIfGp_getCamera__Fi */
 // static void dComIfGp_getCamera(int param_0) {
-extern "C" static asm void dComIfGp_getCamera__Fi() {
+extern "C" asm void dComIfGp_getCamera__Fi() {
     // NONMATCHING
 }
 
@@ -2395,20 +2473,20 @@ extern "C" void dComIfGp_getPlayer__Fi() {
 /* 8054A8F4-8054A914 007AD4 0020+00 1/1 0/0 0/0 .text            dMsgObject_getSelectCursorPos__Fv
  */
 // static void dMsgObject_getSelectCursorPos() {
-extern "C" static asm void dMsgObject_getSelectCursorPos__Fv() {
+extern "C" asm void dMsgObject_getSelectCursorPos__Fv() {
     // NONMATCHING
 }
 
 /* 8054A914-8054A920 007AF4 000C+00 1/1 0/0 0/0 .text            fopAcM_GetRoomNo__FPC10fopAc_ac_c
  */
 // static void fopAcM_GetRoomNo(fopAc_ac_c const* param_0) {
-extern "C" static asm void fopAcM_GetRoomNo__FPC10fopAc_ac_c() {
+extern "C" asm void fopAcM_GetRoomNo__FPC10fopAc_ac_c() {
     // NONMATCHING
 }
 
 /* 8054A920-8054A950 007B00 0030+00 1/1 0/0 0/0 .text            dComIfGs_onEventBit__FUs */
 // static void dComIfGs_onEventBit(u16 param_0) {
-extern "C" static asm void dComIfGs_onEventBit__FUs() {
+extern "C" asm void dComIfGs_onEventBit__FUs() {
     // NONMATCHING
 }
 
