@@ -6,6 +6,10 @@
 #include "d/actor/d_a_npc_henna.h"
 #include "d/d_com_inf_game.h"
 #include "d/d_s_play.h"
+#include "d/actor/d_a_mg_rod.h"
+#include "d/actor/d_a_player.h"
+#include "f_op/f_op_kankyo_mng.h"
+#include "d/d_msg_object.h"
 
 #include "dol2asm.h"
 #include "d/d_camera.h"
@@ -257,21 +261,21 @@ SECTION_DATA static u8 check_kind[8] = {
 //     (void*)(((char*)henna_shop__FP15npc_henna_class) + 0x2B4),
 // };
 
-/* 8054ACE4-8054AD14 -00001 0030+00 1/1 0/0 0/0 .data            @4753 */
-SECTION_DATA static void* lit_4753[12] = {
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0xD4),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2F0),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x10C),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x134),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2F0),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x184),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x200),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x268),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2F0),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2F0),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x280),
-    (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2B4),
-};
+// /* 8054ACE4-8054AD14 -00001 0030+00 1/1 0/0 0/0 .data            @4753 */
+// SECTION_DATA static void* lit_4753[12] = {
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0xD4),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2F0),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x10C),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x134),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2F0),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x184),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x200),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x268),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2F0),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2F0),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x280),
+//     (void*)(((char*)henna_ride__FP15npc_henna_class) + 0x2B4),
+// };
 
 /* 8054AD14-8054AD1C 00008C 0008+00 1/1 0/0 0/0 .data            check_size$5372 */
 SECTION_DATA static u8 check_size[8] = {
@@ -566,7 +570,7 @@ static void* s_npc_sub(void* i_actor, void* i_data) {
         npc_henna_class* data_p = (npc_henna_class*) i_data;
 
         cXyz res = actor_p->current.pos - data_p->current.pos;
-        if (data_p->field_0x61c > res.abs()) {
+        if (data_p->mDistanceToPlayer > res.abs()) {
             return i_actor;
         }
     }
@@ -619,9 +623,9 @@ static void* s_koro2ball_sub(void* i_actor, void* i_data) {
 
 /* 80543844-8054395C 000A24 0118+00 1/1 0/0 0/0 .text            message_shop__FP15npc_henna_class */
 static void message_shop(npc_henna_class* i_this) {
-    s16 res = i_this->field_0x620 - dComIfGp_getPlayer(0)->shape_angle.y + 32768;
-    if (res > 6144 || res < -6144 || (u16)i_this->field_0x620 < 11776 
-        || (u16)i_this->field_0x620 > 43008 || i_this->field_0x61c > 270.0f) {
+    s16 res = i_this->mPlayerAngleY - dComIfGp_getPlayer(0)->shape_angle.y + 32768;
+    if (res > 6144 || res < -6144 || (u16)i_this->mPlayerAngleY < 11776 
+        || (u16)i_this->mPlayerAngleY > 43008 || i_this->mDistanceToPlayer > 270.0f) {
         i_this->field_0x750 = 1;
     }
     
@@ -649,7 +653,7 @@ static void henna_shop(npc_henna_class* i_this) {
     s16 res = 2048;
     switch (i_this->field_0x6a4) {
     case 0:
-        anm_init(i_this, npc_henna_class::ANIM_SITWALK_A, 1.0f, 2, 1.0f);
+        anm_init(i_this, npc_henna_class::ANIM_SITWALK_A, 1.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
         i_this->current.angle.y = -32768;
         i_this->shape_angle.y = -32768;
         i_this->field_0x618 = -32768;
@@ -658,11 +662,11 @@ static void henna_shop(npc_henna_class* i_this) {
         res = 0;
         break;
     case 2:
-        anm_init(i_this, npc_henna_class::ANIM_STANDUP_A, 0.0f, 0, 1.0f);
+        anm_init(i_this, npc_henna_class::ANIM_STANDUP_A, 0.0f, J3DFrameCtrl::EMode_NONE, 1.0f);
         i_this->field_0x6a4 = 3;
     case 3:
         if (i_this->mAnmID == npc_henna_class::ANIM_STANDUP_A && i_this->mpMorf->isStop()) {
-            anm_init(i_this, npc_henna_class::ANIM_WAIT_A, 10.0f, 2, 1.0f);
+            anm_init(i_this, npc_henna_class::ANIM_WAIT_A, 10.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
             i_this->field_0x6a4 = 5;
         }
         break;
@@ -681,11 +685,11 @@ static void henna_shop(npc_henna_class* i_this) {
         break;
     case 10:
         if (cM_rndF(1.0f) < 0.5f || i_this->field_0x708 != 0) {
-            anm_init(i_this, npc_henna_class::ANIM_SENAKA_A, 3.0f, 0, 1.0f);
+            anm_init(i_this, npc_henna_class::ANIM_SENAKA_A, 3.0f, J3DFrameCtrl::EMode_NONE, 1.0f);
             i_this->mBtkID = 2;
             i_this->field_0x708 = 0;
         } else {
-            anm_init(i_this, npc_henna_class::ANIM_NECK_A, 3.0f, 0, 1.0f);
+            anm_init(i_this, npc_henna_class::ANIM_NECK_A, 3.0f, J3DFrameCtrl::EMode_NONE, 1.0f);
             i_this->mBtkID = 1;
         }
         i_this->field_0x6a4 = 11;
@@ -700,9 +704,9 @@ static void henna_shop(npc_henna_class* i_this) {
         i_this->field_0x709 = 5;
         if (i_this->mpMorf->isStop()) {
             if (i_this->mAnmID == npc_henna_class::ANIM_NECK_A) {
-                anm_init(i_this, npc_henna_class::ANIM_NECKWALK_A, 0.0f, 2, 1.0f);
+                anm_init(i_this, npc_henna_class::ANIM_NECKWALK_A, 0.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
             } else {
-                anm_init(i_this, npc_henna_class::ANIM_SENAKAWAIT_A, 0.0f, 2, 1.0f);
+                anm_init(i_this, npc_henna_class::ANIM_SENAKAWAIT_A, 0.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
             }
             i_this->field_0x6a4 = 12;
             i_this->field_0x73c = 120.0f + cM_rndF(60.0f);
@@ -713,7 +717,7 @@ static void henna_shop(npc_henna_class* i_this) {
         i_this->field_0x70d = 0;
         i_this->field_0x709 = 5;
         if (i_this->field_0x73c == 0 || i_this->field_0x752 != 0) {
-            anm_init(i_this, npc_henna_class::ANIM_WAIT_A, 10.0f, 2, 1.0f);
+            anm_init(i_this, npc_henna_class::ANIM_WAIT_A, 10.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
             i_this->field_0x6a4 = 5;
             i_this->mBaseAnmID = 0;
             i_this->mBtkID = 0;
@@ -722,7 +726,7 @@ static void henna_shop(npc_henna_class* i_this) {
         }
     } 
 
-    s16 diff = i_this->field_0x620 - i_this->shape_angle.y;
+    s16 diff = i_this->mPlayerAngleY - i_this->shape_angle.y;
     if (diff > 8192 || diff < -8192) {
         if (diff > 0) {
             i_this->field_0x618 = diff - 8192;
@@ -781,270 +785,395 @@ static void* s_fish_sub(void* i_actor, void* i_data) {
 }
 
 /* ############################################################################################## */
-/* 8054AF80-8054AF84 000008 0001+03 4/4 0/0 0/0 .bss             @1109 */
-static u8 lit_1109[1 + 3 /* padding */];
-
-/* 8054AF84-8054AF88 00000C 0001+03 0/0 0/0 0/0 .bss             @1107 */
-#pragma push
-#pragma force_active on
-static u8 lit_1107[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AF88-8054AF8C 000010 0001+03 0/0 0/0 0/0 .bss             @1105 */
-#pragma push
-#pragma force_active on
-static u8 lit_1105[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AF8C-8054AF90 000014 0001+03 0/0 0/0 0/0 .bss             @1104 */
-#pragma push
-#pragma force_active on
-static u8 lit_1104[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AF90-8054AF94 000018 0001+03 0/0 0/0 0/0 .bss             @1099 */
-#pragma push
-#pragma force_active on
-static u8 lit_1099[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AF94-8054AF98 00001C 0001+03 0/0 0/0 0/0 .bss             @1097 */
-#pragma push
-#pragma force_active on
-static u8 lit_1097[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AF98-8054AF9C 000020 0001+03 0/0 0/0 0/0 .bss             @1095 */
-#pragma push
-#pragma force_active on
-static u8 lit_1095[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AF9C-8054AFA0 000024 0001+03 0/0 0/0 0/0 .bss             @1094 */
-#pragma push
-#pragma force_active on
-static u8 lit_1094[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AFA0-8054AFA4 000028 0001+03 0/0 0/0 0/0 .bss             @1057 */
-#pragma push
-#pragma force_active on
-static u8 lit_1057[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AFA4-8054AFA8 00002C 0001+03 0/0 0/0 0/0 .bss             @1055 */
-#pragma push
-#pragma force_active on
-static u8 lit_1055[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AFA8-8054AFAC 000030 0001+03 0/0 0/0 0/0 .bss             @1053 */
-#pragma push
-#pragma force_active on
-static u8 lit_1053[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AFAC-8054AFB0 000034 0001+03 0/0 0/0 0/0 .bss             @1052 */
-#pragma push
-#pragma force_active on
-static u8 lit_1052[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AFB0-8054AFB4 000038 0001+03 0/0 0/0 0/0 .bss             @1014 */
-#pragma push
-#pragma force_active on
-static u8 lit_1014[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AFB4-8054AFB8 00003C 0001+03 0/0 0/0 0/0 .bss             @1012 */
-#pragma push
-#pragma force_active on
-static u8 lit_1012[1 + 3 /* padding */];
-#pragma pop
-
-/* 8054AFB8-8054AFBC 000040 0001+03 0/0 0/0 0/0 .bss             @1010 */
-#pragma push
-#pragma force_active on
-static u8 lit_1010[1 + 3 /* padding */];
-#pragma pop
-
 /* 8054AFBC-8054AFC0 -00001 0004+00 1/2 0/0 0/0 .bss             None */
 /* 8054AFBC 0001+00 data_8054AFBC @1009 */
 /* 8054AFBD 0003+00 data_8054AFBD None */
-static u8 struct_8054AFBC[4];
+// static u8 struct_8054AFBC[4];
 
-/* 8054AFC0-8054AFCC 000048 000C+00 0/1 0/0 0/0 .bss             @3900 */
-#pragma push
-#pragma force_active on
-static u8 lit_3900[12];
-#pragma pop
 
 /* 8054AFCC-8054B004 000054 0038+00 1/4 0/0 0/0 .bss             l_HIO */
 const daNpc_Henna_HIO_c l_HIO;
 
 /* 8054B004-8054B008 00008C 0004+00 3/4 0/0 0/0 .bss             lrl */
-static u8 lrl[4];
+static dmg_rod_class* lrl;
 
 /* 8054403C-80544A4C 00121C 0A10+00 2/1 0/0 0/0 .text            henna_ride__FP15npc_henna_class */
 static void henna_ride(npc_henna_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
-    f32 stickX3D = mDoCPd_c::getStickX3D(0);
-    f32 stickY = mDoCPd_c::getStickY(0);
+    daPy_py_c* player = (daPy_py_c*) dComIfGp_getPlayer(0);
+    f32 stickX3D = mDoCPd_c::getStickX3D(PAD_1);
+    f32 stickY = mDoCPd_c::getStickY(PAD_1);
     i_this->field_0x70d = 2;
     i_this->field_0x70e = 1300;
-    i_this->field_0x720 = i_this->eyePos;
+    i_this->field_0x720 = player->eyePos;
+
+    cXyz tempPos;
+    cXyz tempPo2;
     if (dComIfGp_checkPlayerStatus0(0, 0x2000) != 0 || dComIfGp_event_runCheck()){
         stickY = 0.0f;
         stickX3D = 0.0f;
     }
-    f32 sqrt = JMAFastSqrt(stickX3D*stickX3D + stickY*stickY);
-    s16 diff =  cM_atan2s(stickX3D, stickY);
+    f32 stickSqrt = JMAFastSqrt(stickX3D*stickX3D + stickY*stickY);
+    s32 stickAtan = cM_atan2s(stickX3D, stickY);
 
+    switch (i_this->field_0x6a4) {
+    case 0:
+        anm_init(i_this, npc_henna_class::ANIM_CANOE_SITWAIT_a, 10.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
+        i_this->field_0x6a4++;
+        i_this->speedF = 0.0f;
+        i_this->field_0x7e1 = 1;
+        break;
+    case 2:
+        anm_init(i_this, npc_henna_class::ANIM_PUTPADDLE, 3.0f, J3DFrameCtrl::EMode_NONE, 1.0f);
+        i_this->field_0x6a4++;
+        break;
+    case 3:
+        cLib_addCalcAngleS2(&i_this->field_0x690, -8000, 1, 2048);
+        if (i_this->mpMorf->isStop()) {
+            i_this->field_0x6a4 = 0;
+        }
+        break;
+    case 5:
+        anm_init(i_this, npc_henna_class::ANIM_PUTPADDLE, 3.0f, J3DFrameCtrl::EMode_RESET, -1.0f);
+        i_this->mpMorf->setFrame(i_this->mpMorf->getEndFrame() - 1.0f);
+        i_this->field_0x6a4++;
+        break;
+    case 6:
+        if (i_this->mpMorf->getFrame() <= VREG_F(6) + 12.0f) {
+            cLib_addCalcAngleS2(&i_this->field_0x690, 0, 1, 2048);
+        }
+        if (i_this->mpMorf->isStop()) {
+            i_this->field_0x6a4 = 7;
+        }
+        break;
+    case 7:
+        cLib_addCalcAngleS2(&i_this->field_0x690, 0, 1, 2048);
+        break;
+    case 10:
+        anm_init(i_this, npc_henna_class::ANIM_CLAP_A, 5.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
+        i_this->field_0x6a4 = 11;
+        i_this->field_0x73c = l_HIO.field_0x0c;
+        break;
+    case 11:
+        if (i_this->field_0x73c == 0) {
+            i_this->field_0x6a4 = 0;
+            i_this->field_0x6f2 = cM_rndF(100.0f) + 60.0f;
+            i_this->field_0x662 = 0;
+        }
+    }
+
+    if (lrl != NULL) {
+        if (lrl->field_0xf7e == 0) {
+            if (i_this->field_0x710 == 0) {
+                i_this->field_0x710 = cM_rndF(100.0f) + 90.0f;
+                cMtx_YrotS(*calc_mtx, i_this->shape_angle.y);
+                tempPos.x = cM_rndFX(200.0f);
+                tempPos.y = 0.0f;
+                tempPos.z = 100.0f;
+                MtxPosition(&tempPos, &i_this->field_0x714);
+                i_this->field_0x714 += i_this->current.pos;
+            } else {
+                i_this->field_0x710--;
+            }
+            i_this->field_0x720 = i_this->field_0x714;
+            fopAc_ac_c* fish = (fopAc_ac_c*) fpcM_Search(s_fish_sub, i_this);
+            if (fish != NULL) {
+                i_this->field_0x720 = fish->current.pos;
+                i_this->field_0x70e = 1536;
+            }
+        } else if (lrl->field_0x13b4 == 10 || lrl->field_0x13b4 == 11) {
+            fopAc_ac_c* actor =  fopAcM_SearchByID(lrl->field_0x10ac);
+            if (actor != NULL) {
+                i_this->field_0x720 = actor->current.pos;
+                i_this->field_0x70e = 1000;
+            }
+        } else if (lrl->field_0xf7e == 1) {
+            cMtx_YrotS(*calc_mtx, player->getFishingRodAngleY());
+            tempPos.x = 0.0f;
+            tempPos.y = 0.0f;
+            tempPos.z = 2000.0f;
+            MtxPosition(&tempPos, &i_this->field_0x720);
+            i_this->field_0x720 += player->eyePos;
+        } else if (lrl->field_0xf7e == 3 || lrl->field_0xf7e == 4 || lrl->field_0xf7e == 5) {
+            i_this->field_0x720 = lrl->current.pos;
+            i_this->field_0x70e = 1536;
+        }
+
+        if (player->checkCanoeRide() && (lrl->field_0x13b4 == 0 || lrl->field_0x13b4 >= 80 )) {
+            if (i_this->field_0x6a4 < 5) {
+                i_this->field_0x6a4 = 5;
+            }
+
+            if (i_this->field_0x6a4 == 7) {
+                i_this->field_0x692 = 1;
+
+                if (stickSqrt > 0.1f) {
+                    if (stickAtan <= 12800 && stickAtan >= -12800) {
+                        if (i_this->field_0x660 > 20 && i_this->mAnmID != npc_henna_class::ANIM_CANOE_ROWL) {
+                            anm_init(i_this, npc_henna_class::ANIM_CANOE_ROWL, 10.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
+                        }
+                        i_this->field_0x660++;
+                    } else if (stickAtan > AREG_S(6) + 24576 || stickAtan < -(AREG_S(6) + 24576)) {
+                        if (i_this->field_0x660 > 20 && i_this->mAnmID != npc_henna_class::ANIM_CANOE_ROWBL) {
+                            anm_init(i_this, npc_henna_class::ANIM_CANOE_ROWBL, 10.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
+                        }
+                        i_this->field_0x660++;
+                        if (i_this->field_0x660 > 20) {
+                            cMtx_YrotS(*calc_mtx, i_this->shape_angle.y);
+                            tempPos.x = (i_this->field_0x6a0 & 128) != 0 ? 100.0f : -100.0f;
+                            tempPos.y = 0.0f;
+                            tempPos.z = -200.0f;
+                            MtxPosition(&tempPos, &i_this->field_0x720);
+                            i_this->field_0x720 += i_this->current.pos;
+                            i_this->field_0x70d = 3;
+                            i_this->field_0x70e = 5000;
+                        }
+
+                    } else {
+                        if (i_this->mAnmID != npc_henna_class::ANIM_WAITCANOE_L) {
+                            anm_init(i_this, npc_henna_class::ANIM_WAITCANOE_L, 10.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
+                        }
+                        i_this->field_0x660 = 0;
+                    }
+                } else {
+                    if (i_this->mAnmID != npc_henna_class::ANIM_WAITCANOE_L) {
+                        anm_init(i_this, npc_henna_class::ANIM_WAITCANOE_L, 10.0f, J3DFrameCtrl::EMode_LOOP, 1.0f);
+                    }
+                    i_this->field_0x660 = 0;
+                }
+
+                if (i_this->mAnmID == npc_henna_class::ANIM_CANOE_ROWL || i_this->mAnmID == npc_henna_class::ANIM_CANOE_ROWBL) {
+                    stickSqrt = (VREG_F(7) + 1.5f) * stickSqrt;
+                    if (stickSqrt < VREG_F(8) + 1.0f) {
+                        stickSqrt = VREG_F(8) + 1.0f;
+                    }
+                    i_this->mpMorf->setPlaySpeed(stickSqrt);
+                    MTXCopy(i_this->mpModel->getBaseTRMtx(), *calc_mtx);
+                    tempPos.x = 0.0f;
+                    tempPos.y = 0.0f;
+                    tempPos.z = VREG_F(8) - 100.0f;
+                    MtxPosition(&tempPos, &tempPo2);
+                    tempPo2.y = lrl->field_0x590;
+                    if (i_this->mAnmID == npc_henna_class::ANIM_CANOE_ROWL) {
+                        stickSqrt = 22.0f;
+                    } else {
+                        stickSqrt = 2.0f;
+                    }
+                    if (i_this->mpMorf->checkFrame(stickSqrt)) {
+                        fopKyM_createWpillar(&tempPo2, VREG_F(10) + 0.6f, 0);
+                    }
+                }
+            }
+        } else {
+            if (i_this->field_0x6a4 >= 5 && i_this->field_0x6a4 < 10) {
+                i_this->field_0x6a4 = 2;
+                i_this->field_0x692 = 1;
+            }
+            i_this->field_0x660 = 0;
+        }
+    }
+
+    if (i_this->mAnmID == npc_henna_class::ANIM_PUTPADDLE && i_this->mpMorf->getFrame() <= VREG_F(6) + 12.0f) {
+        i_this->field_0x692 = 1;
+    }
+    if (!player->checkCanoeRide()) {
+        i_this->field_0x70d = 10;
+    }
+    if ((lrl != NULL && lrl->field_0x146d != 0) || i_this->field_0x7b8 != 0 || dComIfGp_checkPlayerStatus0(0, 8192) != 0) {
+        i_this->field_0x70d = 2;
+        i_this->field_0x70e = 1000;
+        i_this->field_0x720 = player->eyePos;
+        i_this->field_0x720.y +=  hREG_F(0) + 40.0f; 
+        if (i_this->mAnmID == npc_henna_class::ANIM_WAITCANOE_L) {
+            cMtx_YrotS(*calc_mtx, i_this->shape_angle.y);
+            tempPos.x = JREG_F(7) - 80.0f;
+            tempPos.y = 0.0f;
+            tempPos.z = 0.0f;
+            MtxPosition(&tempPos, &tempPo2);
+            i_this->field_0x720 += tempPo2;
+        }
+        if (dComIfGp_checkPlayerStatus0(0, 8192) != 0) {
+            camera_class* camera = dComIfGp_getCamera(0);
+            cXyz eyeDiff = i_this->eyePos - camera->lookat.eye;
+            cXyz centerDiff = camera->lookat.center - camera->lookat.eye;
+            s32 diff = cM_atan2s(centerDiff.x, centerDiff.z);
+            diff -= cM_atan2s(eyeDiff.x, eyeDiff.z);
+            if ((s16)diff < 1024 && (s16)diff > -1024) {
+                f32 sqrtCenter = JMAFastSqrt(centerDiff.x * centerDiff.x + centerDiff.z * centerDiff.z);
+                s16 tanCenter = -cM_atan2s(centerDiff.y, sqrtCenter);
+                f32 sqrtEye = JMAFastSqrt(eyeDiff.x * eyeDiff.x + eyeDiff.z * eyeDiff.z);
+                s16 tanCenter2 = -cM_atan2s(eyeDiff.y, sqrtEye) - tanCenter;
+                if (tanCenter2 < 1024 && tanCenter2 > -1024 && i_this->field_0x742 == 0) {
+                    i_this->field_0x742 = 160;
+                    i_this->field_0x6ba = 60;
+                }
+            }
+        }
+    } 
 }
 
 /* ############################################################################################## */
-/* 8054A9F0-8054A9F4 00008C 0004+00 0/1 0/0 0/0 .rodata          @4740 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4740 = 12.0f;
-COMPILER_STRIP_GATE(0x8054A9F0, &lit_4740);
-#pragma pop
-
-/* 8054A9F4-8054A9F8 000090 0004+00 0/3 0/0 0/0 .rodata          @4741 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4741 = 5.0f;
-COMPILER_STRIP_GATE(0x8054A9F4, &lit_4741);
-#pragma pop
-
-/* 8054A9F8-8054A9FC 000094 0004+00 0/1 0/0 0/0 .rodata          @4742 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4742 = 90.0f;
-COMPILER_STRIP_GATE(0x8054A9F8, &lit_4742);
-#pragma pop
-
-/* 8054A9FC-8054AA00 000098 0004+00 0/2 0/0 0/0 .rodata          @4743 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4743 = 200.0f;
-COMPILER_STRIP_GATE(0x8054A9FC, &lit_4743);
-#pragma pop
-
-/* 8054AA00-8054AA04 00009C 0004+00 0/0 0/0 0/0 .rodata          @4744 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4744 = 2000.0f;
-COMPILER_STRIP_GATE(0x8054AA00, &lit_4744);
-#pragma pop
-
-/* 8054AA04-8054AA08 0000A0 0004+00 0/0 0/0 0/0 .rodata          @4745 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4745 = 1.0f / 10.0f;
-COMPILER_STRIP_GATE(0x8054AA04, &lit_4745);
-#pragma pop
-
-/* 8054AA08-8054AA0C 0000A4 0004+00 0/0 0/0 0/0 .rodata          @4746 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4746 = -200.0f;
-COMPILER_STRIP_GATE(0x8054AA08, &lit_4746);
-#pragma pop
-
-/* 8054AA0C-8054AA10 0000A8 0004+00 0/1 0/0 0/0 .rodata          @4747 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4747 = 1.5f;
-COMPILER_STRIP_GATE(0x8054AA0C, &lit_4747);
-#pragma pop
-
-/* 8054AA10-8054AA14 0000AC 0004+00 0/0 0/0 0/0 .rodata          @4748 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4748 = 22.0f;
-COMPILER_STRIP_GATE(0x8054AA10, &lit_4748);
-#pragma pop
-
-/* 8054AA14-8054AA18 0000B0 0004+00 0/2 0/0 0/0 .rodata          @4749 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4749 = 2.0f;
-COMPILER_STRIP_GATE(0x8054AA14, &lit_4749);
-#pragma pop
-
-/* 8054AA18-8054AA1C 0000B4 0004+00 0/1 0/0 0/0 .rodata          @4750 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4750 = 3.0f / 5.0f;
-COMPILER_STRIP_GATE(0x8054AA18, &lit_4750);
-#pragma pop
-
-/* 8054AA1C-8054AA20 0000B8 0004+00 0/1 0/0 0/0 .rodata          @4751 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4751 = 40.0f;
-COMPILER_STRIP_GATE(0x8054AA1C, &lit_4751);
-#pragma pop
-
-/* 8054AA20-8054AA24 0000BC 0004+00 0/0 0/0 0/0 .rodata          @4752 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4752 = -80.0f;
-COMPILER_STRIP_GATE(0x8054AA20, &lit_4752);
-#pragma pop
-
-/* 8054AA24-8054AA28 0000C0 0004+00 0/1 0/0 0/0 .rodata          @4908 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4908 = -0.75f;
-COMPILER_STRIP_GATE(0x8054AA24, &lit_4908);
-#pragma pop
-
-/* 8054AA28-8054AA2C 0000C4 0004+00 0/2 0/0 0/0 .rodata          @4909 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4909 = 150.0f;
-COMPILER_STRIP_GATE(0x8054AA28, &lit_4909);
-#pragma pop
-
-/* 8054AA2C-8054AA30 0000C8 0004+00 0/1 0/0 0/0 .rodata          @4910 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4910 = 20.0f;
-COMPILER_STRIP_GATE(0x8054AA2C, &lit_4910);
-#pragma pop
-
-/* 8054AA30-8054AA34 0000CC 0004+00 0/1 0/0 0/0 .rodata          @4911 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4911 = -150.0f;
-COMPILER_STRIP_GATE(0x8054AA30, &lit_4911);
-#pragma pop
-
-/* 8054AA34-8054AA38 0000D0 0004+00 0/1 0/0 0/0 .rodata          @4912 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4912 = -0.5f;
-COMPILER_STRIP_GATE(0x8054AA34, &lit_4912);
-#pragma pop
-
-/* 8054AA38-8054AA3C 0000D4 0004+00 0/1 0/0 0/0 .rodata          @4913 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_4913 = -13.0f / 20.0f;
-COMPILER_STRIP_GATE(0x8054AA38, &lit_4913);
-#pragma pop
 
 /* 80544A4C-805450A8 001C2C 065C+00 1/1 0/0 0/0 .text            action__FP15npc_henna_class */
-static void action(npc_henna_class* param_0) {
-    // NONMATCHING
+static void action(npc_henna_class* i_this) {
+    fopAc_ac_c* player = dComIfGp_getPlayer(LINK_PTR);
+    i_this->mDistanceToPlayer = fopAcM_searchPlayerDistance(i_this);
+    i_this->mPlayerAngleY = fopAcM_searchPlayerAngleY(i_this);
+    
+    if (i_this->field_0x7b8 != 0) {
+        i_this->field_0x7b8--;
+    }
+    if (i_this->field_0x7d5 != 0) {
+        i_this->field_0x7d5--;
+    }
+    if (i_this->field_0x7b5 != 0) {
+        i_this->field_0x7b5--;
+    }
+    if (i_this->field_0x750 != 0) {
+        i_this->field_0x750--;
+    }
+    if (i_this->field_0x709 != 0) {
+        i_this->field_0x709--;
+    }
+
+    fpcM_Search(s_du_sub, i_this);
+    fopAc_ac_c* npc;
+
+    if (i_this->field_0x752 >= 80 && i_this->field_0x754 > 5) {
+        npc = (fopAc_ac_c*) fpcM_Search(s_piro_sub, i_this);
+    } else {
+        npc = (fopAc_ac_c*) fpcM_Search(s_npc_sub, i_this);
+        if (npc == NULL) {
+            npc = player;
+        }
+    }
+    
+    i_this->field_0x70d = 1;
+    msg_class* actor = dMsgObject_c::getActor();
+    if (actor != NULL && actor->mode == 6 && dMsgObject_c::isMouthCheck() && (lrl == NULL || lrl->field_0x13b4 != 30)) {
+        i_this->field_0x6a6 = 15;
+    }
+    i_this->field_0x5b5 = 0;
+
+    switch(i_this->field_0x6a2) {
+    case 0:
+    case 10:
+    case 60:
+        break;
+    case 20:
+        henna_ride(i_this);
+        break;
+    case 50:
+        henna_shop(i_this);
+        i_this->field_0x5b5 = 2;
+        break;
+    }
+
+    if (i_this->field_0x5b5 == 1 && i_this->mDistanceToPlayer < 200.0f) {
+        i_this->field_0x6a2 = 10;
+        i_this->field_0x6a4 = 0;
+    }
+    if (i_this->field_0x7e1 == 0) {
+        i_this->field_0x6c4 = 0;
+    } else {
+        fopAc_ac_c* fopac = fopAcM_SearchByID(i_this->fpcProcID);
+        if (fopac != NULL) {
+            cLib_addCalcAngleS2(&i_this->field_0x6c4, fopac->shape_angle.z * (ZREG_F(0) - 0.75f), 4, ZREG_S(0) + 500);
+        }
+    }
+    cLib_addCalcAngleS2(&i_this->shape_angle.y, i_this->current.angle.y, 2, 16384);
+    if (i_this->mBtpID == 0) {
+        if (i_this->field_0x6f2 == 0) {
+            i_this->field_0x6f2 = cM_rndF(150.0f) + 30.0f;
+            i_this->field_0x662 = 8;
+        }
+        if (i_this->field_0x662 != 0) {
+            i_this->field_0x662--;
+            i_this->field_0x69c = i_this->field_0x662;
+            if (i_this->field_0x69c > 5.0f) {
+                i_this->field_0x69c = 0.0f;
+            }
+        } else {
+            i_this->field_0x69c = 0.0f;
+        }
+    }
+
+    s16 yDiff = 0;
+    s16 temp = 0;
+    cXyz diff; 
+    s16 val2 = BREG_S(0) + 10000;
+    s16 val = BREG_S(1) + 1000;
+    if (i_this->field_0x70d == 10 || (i_this->field_0x70d == 1 && i_this->mDistanceToPlayer < 700.0f)) {
+        if (i_this->field_0x70c != 0) {
+            diff = npc->eyePos - i_this->eyePos;
+            diff.y += TREG_F(2) + i_this->field_0x72c * (TREG_F(5) + 20.0f);
+        } else {
+            diff = npc->eyePos - i_this->current.pos;
+            if (i_this->field_0x7e1 == 0) {
+                diff.y += TREG_F(1) - 150.0f;
+            } else {
+                diff.y += TREG_F(2);
+            }
+        }
+        s16 angleDiff = i_this->shape_angle.y - i_this->mPlayerAngleY;
+        if (i_this->field_0x7e1 != 0 || (angleDiff < 16384 && angleDiff > -16384)) {
+            yDiff = cM_atan2s(diff.x, diff.z) - i_this->shape_angle.y;
+            temp = -cM_atan2s(diff.y,JMAFastSqrt(diff.x * diff.x + diff.z * diff.z));
+        }
+    } else if (i_this->field_0x70d == 2 || i_this->field_0x70d == 3){
+        diff = i_this->field_0x720 - i_this->current.pos;
+        yDiff = cM_atan2s(diff.x, diff.z) - i_this->shape_angle.y;
+        temp = -cM_atan2s(diff.y, JMAFastSqrt(diff.x * diff.x + diff.z * diff.z));
+        if (i_this->field_0x70d == 2) {
+            val = 15000;
+        } else {
+            val = 24576;
+        }
+    }
+
+    
+    if (yDiff <= val) {
+        if (yDiff < -val) {
+            val = -val;
+        } else {
+            val = yDiff;
+        }
+    }
+
+    if (temp <= val2) {
+        if (temp < -val2) {
+            val2 = -val2;
+        } else {
+            val2 = temp;
+        }
+    }
+
+    cLib_addCalc2(&i_this->field_0x6ac, val, 0.5, i_this->field_0x70e);
+    cLib_addCalcAngleS2(&i_this->field_0x6b0, val2, 2, i_this->field_0x70e);
+    i_this->field_0x70e = 1536;
+    if (i_this->field_0x6b0 < 1) {
+        i_this->field_0x6b6 = i_this->field_0x6b0 * (TREG_F(3) - 0.65f); 
+    } else {
+        i_this->field_0x6b6 = i_this->field_0x6b0 * (TREG_F(2) - 0.5f);
+    }
+    // * (TREG_F(13) + 0.15f));
+    i_this->field_0x6b6 += (s16) ((fabsf(i_this->field_0x6ac)) * (TREG_F(13) + 0.15f));
 }
 
 /* 805450A8-8054518C 002288 00E4+00 1/1 0/0 0/0 .text            cam_3d_morf__FP15npc_henna_classf
  */
-static void cam_3d_morf(npc_henna_class* param_0, f32 param_1) {
-    // NONMATCHING
+static void cam_3d_morf(npc_henna_class* i_this, f32 i_scale) {
+    cLib_addCalc2(&i_this->field_0x76c, i_this->field_0x784, i_scale, 
+        i_this->field_0x79c * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x770, i_this->field_0x788, i_scale, 
+        i_this->field_0x7a0 * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x774, i_this->field_0x78c, i_scale, 
+        i_this->field_0x7a4 * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x760, i_this->field_0x778, i_scale, 
+        i_this->field_0x790 * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x764, i_this->field_0x77c, i_scale, 
+        i_this->field_0x794 * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x768, i_this->field_0x780, i_scale, 
+        i_this->field_0x798 * i_this->field_0x7c0);
 }
 
 /* ############################################################################################## */
@@ -1108,13 +1237,44 @@ COMPILER_STRIP_GATE(0x8054AA58, &lit_5042);
 static u8 data_8054B008[4];
 
 /* 8054518C-8054549C 00236C 0310+00 1/1 0/0 0/0 .text            demo_camera__FP15npc_henna_class */
-static void demo_camera(npc_henna_class* param_0) {
-    // NONMATCHING
+static void demo_camera(npc_henna_class* i_this) {
+    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    camera_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
+    camera_class* camera_2 = dComIfGp_getCamera(0);
+
+    if (!dComIfGp_event_runCheck() && !dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[465]) && i_this->field_0x756 + 1 < 200) {
+        float x = 140.0f - player->current.pos.x;
+        float z = -100.0f - player->current.pos.z;
+        if (x*x + z*z < 1500.0f) {
+            i_this->field_0x756 = 200;
+            i_this->field_0x752 = 35;
+        }
+    }
+
+    switch (i_this->field_0x752){
+        
+    }
 }
 
 /* 8054549C-80545638 00267C 019C+00 1/1 0/0 0/0 .text zoom_check__FP15npc_henna_classP4cXyzs */
-static void zoom_check(npc_henna_class* param_0, cXyz* param_1, s16 param_2) {
-    // NONMATCHING
+static BOOL zoom_check(npc_henna_class* i_this, cXyz* param_1, s16 param_2) {
+    dComIfGp_getPlayer(0);
+    dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
+    camera_class* camera = dComIfGp_getCamera(0);
+    cXyz diff = *param_1 - camera->lookat.eye;
+    if (JMAFastSqrt(diff.x * diff.x + diff.z * diff.z) < XREG_F(10) + 300.0f) {
+        cXyz diff2 = camera->lookat.center - camera->lookat.eye;
+        s16 d1 = cM_atan2s(diff2.x, diff2.z);
+        s16 d2 = cM_atan2s(diff.x, diff.z);
+        if ((s16)(d2-d1) < param_2 && (s16)-(d2-d1) > param_2) {  
+            s16 diffRes1 = -cM_atan2s(diff2.y,JMAFastSqrt(diff2.x * diff2.x + diff2.z * diff2.z));
+            s16 diffRes2 = -cM_atan2s(diff.y,JMAFastSqrt(diff.x * diff.x + diff.z * diff.z));
+            if ((s16)(diffRes1 - diffRes2) < param_2 && (s16)(diffRes1 - diffRes2) > param_2) {
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
 }
 
 /* ############################################################################################## */
