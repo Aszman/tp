@@ -965,6 +965,8 @@ public:
     s16 getBodyAngleX() const { return mBodyAngle.x; }
     s16 getBodyAngleY() const { return mBodyAngle.y; }
 
+    s16 getFishingRodAngleY() const { return shape_angle.y + mBodyAngle.y; }
+
     f32 getHeight() const { return field_0x598; }
 
     BOOL checkMidnaWarp() const { return 0; }
