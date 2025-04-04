@@ -10,6 +10,7 @@
 #include "d/actor/d_a_player.h"
 #include "f_op/f_op_kankyo_mng.h"
 #include "d/d_msg_object.h"
+#include "d/actor/d_a_canoe.h"
 
 #include "dol2asm.h"
 #include "d/d_camera.h"
@@ -240,8 +241,8 @@ SECTION_DATA static u32 lit_1787[1 + 4 /* padding */] = {
 #pragma pop
 
 /* 8054ACA8-8054ACB0 000020 0008+00 1/1 0/0 0/0 .data            check_kind */
-SECTION_DATA static u8 check_kind[8] = {
-    0xF5, 0x7F, 0xF4, 0x7F, 0xF3, 0x7F, 0xF2, 0x7F,
+SECTION_DATA static u16 check_kind[4] = {
+    0xF57F, 0xF47F, 0xF37F, 0xF27F
 };
 
 // /* 8054ACB0-8054ACE4 -00001 0034+00 1/1 0/0 0/0 .data            @4437 */
@@ -589,7 +590,7 @@ static void* s_piro_sub(void* i_actor, void* i_data) {
 static void* s_du_sub(void* i_actor, void* i_data) {
     npc_henna_class* actor_p = (npc_henna_class*) i_actor;
     npc_henna_class* data_p = (npc_henna_class*) i_data;
-    if (fopAcM_IsActor(i_actor) && fopAcM_GetName(i_actor) == PROC_NPC_DU && actor_p->field_0x5b8 < 300.0f) {
+    if (fopAcM_IsActor(i_actor) && fopAcM_GetName(i_actor) == PROC_NPC_DU && actor_p->field_0x5b8.f_32 < 300.0f) {
         data_p->field_0x7d5 = 70;
         return i_actor;
     }
@@ -1075,7 +1076,7 @@ static void action(npc_henna_class* i_this) {
     if (i_this->field_0x7e1 == 0) {
         i_this->field_0x6c4 = 0;
     } else {
-        fopAc_ac_c* fopac = fopAcM_SearchByID(i_this->fpcProcID);
+        fopAc_ac_c* fopac = fopAcM_SearchByID(i_this->canoeID);
         if (fopac != NULL) {
             cLib_addCalcAngleS2(&i_this->field_0x6c4, fopac->shape_angle.z * (ZREG_F(0) - 0.75f), 4, ZREG_S(0) + 500);
         }
@@ -1155,110 +1156,97 @@ static void action(npc_henna_class* i_this) {
     } else {
         i_this->field_0x6b6 = i_this->field_0x6b0 * (TREG_F(2) - 0.5f);
     }
-    // * (TREG_F(13) + 0.15f));
     i_this->field_0x6b6 += (s16) ((fabsf(i_this->field_0x6ac)) * (TREG_F(13) + 0.15f));
 }
 
 /* 805450A8-8054518C 002288 00E4+00 1/1 0/0 0/0 .text            cam_3d_morf__FP15npc_henna_classf
  */
 static void cam_3d_morf(npc_henna_class* i_this, f32 i_scale) {
-    cLib_addCalc2(&i_this->field_0x76c, i_this->field_0x784, i_scale, 
-        i_this->field_0x79c * i_this->field_0x7c0);
-    cLib_addCalc2(&i_this->field_0x770, i_this->field_0x788, i_scale, 
-        i_this->field_0x7a0 * i_this->field_0x7c0);
-    cLib_addCalc2(&i_this->field_0x774, i_this->field_0x78c, i_scale, 
-        i_this->field_0x7a4 * i_this->field_0x7c0);
-    cLib_addCalc2(&i_this->field_0x760, i_this->field_0x778, i_scale, 
-        i_this->field_0x790 * i_this->field_0x7c0);
-    cLib_addCalc2(&i_this->field_0x764, i_this->field_0x77c, i_scale, 
-        i_this->field_0x794 * i_this->field_0x7c0);
-    cLib_addCalc2(&i_this->field_0x768, i_this->field_0x780, i_scale, 
-        i_this->field_0x798 * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x76c.x, i_this->field_0x784.x, i_scale, 
+        i_this->field_0x79c.x * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x76c.y, i_this->field_0x784.y, i_scale, 
+        i_this->field_0x79c.y * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x76c.z, i_this->field_0x784.z, i_scale, 
+        i_this->field_0x79c.z * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x760.x, i_this->field_0x778.x, i_scale, 
+        i_this->field_0x790.x * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x760.y, i_this->field_0x778.y, i_scale, 
+        i_this->field_0x790.y * i_this->field_0x7c0);
+    cLib_addCalc2(&i_this->field_0x760.z, i_this->field_0x778.z, i_scale, 
+        i_this->field_0x790.z * i_this->field_0x7c0);
 }
 
 /* ############################################################################################## */
-/* 8054AA3C-8054AA40 0000D8 0004+00 0/1 0/0 0/0 .rodata          @5035 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_5035 = -2815.0f;
-COMPILER_STRIP_GATE(0x8054AA3C, &lit_5035);
-#pragma pop
-
-/* 8054AA40-8054AA44 0000DC 0004+00 0/1 0/0 0/0 .rodata          @5036 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_5036 = 66.0f;
-COMPILER_STRIP_GATE(0x8054AA40, &lit_5036);
-#pragma pop
-
-/* 8054AA44-8054AA48 0000E0 0004+00 0/1 0/0 0/0 .rodata          @5037 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_5037 = 4604.0f;
-COMPILER_STRIP_GATE(0x8054AA44, &lit_5037);
-#pragma pop
-
-/* 8054AA48-8054AA4C 0000E4 0004+00 0/1 0/0 0/0 .rodata          @5038 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_5038 = -2914.0f;
-COMPILER_STRIP_GATE(0x8054AA48, &lit_5038);
-#pragma pop
-
-/* 8054AA4C-8054AA50 0000E8 0004+00 0/1 0/0 0/0 .rodata          @5039 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_5039 = 144.0f;
-COMPILER_STRIP_GATE(0x8054AA4C, &lit_5039);
-#pragma pop
-
-/* 8054AA50-8054AA54 0000EC 0004+00 0/1 0/0 0/0 .rodata          @5040 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_5040 = 5036.0f;
-COMPILER_STRIP_GATE(0x8054AA50, &lit_5040);
-#pragma pop
-
-/* 8054AA54-8054AA58 0000F0 0004+00 0/1 0/0 0/0 .rodata          @5041 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_5041 = 55.0f;
-COMPILER_STRIP_GATE(0x8054AA54, &lit_5041);
-#pragma pop
-
-/* 8054AA58-8054AA5C 0000F4 0004+00 0/1 0/0 0/0 .rodata          @5042 */
-#pragma push
-#pragma force_active on
-SECTION_RODATA static f32 const lit_5042 = 4603.0f;
-COMPILER_STRIP_GATE(0x8054AA58, &lit_5042);
-#pragma pop
-
 /* 8054B008-8054B00C 000090 0004+00 1/3 0/0 0/0 .bss             None */
-static u8 data_8054B008[4];
+static u8 lbl_82_bss_90[4];
 
 /* 8054518C-8054549C 00236C 0310+00 1/1 0/0 0/0 .text            demo_camera__FP15npc_henna_class */
 static void demo_camera(npc_henna_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = dComIfGp_getPlayer(LINK_PTR);
     camera_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
-    camera_class* camera_2 = dComIfGp_getCamera(0);
+    dComIfGp_getCamera(0);
 
-    if (!dComIfGp_event_runCheck() && !dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[465]) && i_this->field_0x756 + 1 < 200) {
-        float x = 140.0f - player->current.pos.x;
-        float z = -100.0f - player->current.pos.z;
-        if (x*x + z*z < 1500.0f) {
-            i_this->field_0x756 = 200;
-            i_this->field_0x752 = 35;
+    switch(i_this->field_0x752) {
+    case 0:
+        lbl_82_bss_90[0] = 0;
+        break;
+    case 100:
+        if (!i_this->eventInfo.checkCommandDemoAccrpt()) {
+            fopAcM_orderPotentialEvent(i_this, 2, 0xffff, 0);
+            i_this->eventInfo.onCondition(2);
+            return;
+        }
+        i_this->field_0x752 = 0x65;
+        i_this->field_0x754 = 0;
+        camera->mCamera.Stop();
+        
+        i_this->field_0x76c.set(-2815.0f, 66.0f, 4604.0f);
+        i_this->field_0x760.set(-2914.0f, 144.0f, 5036.0f);
+        i_this->field_0x7bc = 55.0f;
+    case 101:
+        if (i_this->field_0x754 == 2) {
+            daPy_getPlayerActorClass()->changeOriginalDemo();
+            daPy_getPlayerActorClass()->changeDemoMode(4, 3, 0,0 );
+            i_this->field_0x6a2 = 20;
+            i_this->field_0x6a4 = 0;
+            daCanoe_c* canoe = (daCanoe_c*) fopAcM_SearchByID(i_this->canoeID);
+            if (canoe != NULL) {
+                cXyz newPos(-2815.0f, canoe->current.pos.y, 4603.0f);
+                canoe->setPosAndAngle(&newPos, 30425);
+            }
+        } 
+        if (i_this->field_0x754 == 10) {
+            camera->mCamera.Reset(i_this->field_0x76c, i_this->field_0x760);
+            camera->mCamera.Start();
+            dComIfGp_event_reset();
+            daPy_getPlayerActorClass()->cancelOriginalDemo();
+
+            if (!dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[464])){
+                i_this->field_0x70a = 10;
+                i_this->field_0x70b = 0;
+                i_this->field_0x734 = 1;
+            } else {
+                i_this->field_0x752 = 0;
+            }
+            dComIfGs_offEventBit(dSv_event_flag_c::saveBitLabels[463]);
+            dComIfGs_offEventBit(dSv_event_flag_c::saveBitLabels[464]);
         }
     }
 
-    switch (i_this->field_0x752){
-        
+    if (i_this->field_0x752 != 0) {
+        i_this->field_0x754++;
+        if (i_this->field_0x754 > 10000) {
+            i_this->field_0x754 = 10000;
+        }
+        if (i_this->field_0x752 < 110) {
+            camera->mCamera.Set(i_this->field_0x76c, i_this->field_0x760, i_this->field_0x7bc, 0);
+        }
     }
 }
 
 /* 8054549C-80545638 00267C 019C+00 1/1 0/0 0/0 .text zoom_check__FP15npc_henna_classP4cXyzs */
 static BOOL zoom_check(npc_henna_class* i_this, cXyz* param_1, s16 param_2) {
-    dComIfGp_getPlayer(0);
+    dComIfGp_getPlayer(LINK_PTR);
     dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_class* camera = dComIfGp_getCamera(0);
     cXyz diff = *param_1 - camera->lookat.eye;
@@ -1432,23 +1420,271 @@ static u8 lit_5131[12];
 /* 8054B0FC-8054B1EC 000184 00F0+00 0/2 0/0 0/0 .bss             zoom_check_pos */
 #pragma push
 #pragma force_active on
-static u8 zoom_check_pos[240];
+static cXyz zoom_check_pos[20];
 #pragma pop
 
 /* 80545638-805483F4 002818 2DBC+00 3/1 0/0 0/0 .text demo_camera_shop__FP15npc_henna_class */
-static void demo_camera_shop(npc_henna_class* param_0) {
-    // NONMATCHING
+static void demo_camera_shop(npc_henna_class* i_this) {
+    fopAc_ac_c* player = dComIfGp_getPlayer(LINK_PTR);
+    camera_class* playerCamera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
+    camera_class* camera = dComIfGp_getCamera(0);
+
+    if (!dComIfGp_event_runCheck() && !dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[465])){
+        i_this->field_0x756++;
+        if (i_this->field_0x756 < 200) {
+            cXyz temp(140.0f - player->current.pos.x, 0.0f, -100.0f - player->current.pos.z);
+            if (temp.x * temp.x + temp.z + temp.z < 1500.0f) {
+                i_this->field_0x756 = 200;
+                i_this->field_0x752 = 35;
+            }
+        }
+    }
+
+    cXyz temp;
+    switch (i_this->field_0x752) {
+    case 0:
+        if (dComIfGp_event_runCheck()) {
+            break;
+        }
+        if (i_this->field_0x7b5 == 0) {
+            if (i_this->field_0x7ba == 0) {
+                for (int index = 0; index < 20; index++) {
+                    if (index == 11 && !dComIfGs_getEventReg(check_kind[1])) {
+                        continue;
+                    }
+
+                    f32 xDiff = zoom_check_pos[index].x - player->current.pos.x;
+                    f32 zDiff = zoom_check_pos[index].z - player->current.pos.z;
+                    if (JMAFastSqrt(xDiff * xDiff + zDiff * zDiff) < 120.0f) {
+                        daPy_py_c::setLookPos(&zoom_check_pos[index]);
+                    }
+                }
+                if (i_this->field_0x7b6 != 0) {
+                    i_this->field_0x7b6--;
+                }
+                if (!dComIfGp_checkPlayerStatus0(0, 0x2000)) {
+                    return;
+                }
+
+                for (int index = 0; index < 20; index++) {
+                    if (index == 11 && !dComIfGs_getEventReg(check_kind[1])){
+                        continue;
+                    }
+                    int val;
+                    switch (index) {
+                    case 0:
+                    case 5:
+                    case 7:
+                        val = 0xc00;
+                        break;
+                    case 11:
+                    case 12:
+                    case 13:
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 17:
+                        val = 0x600;
+                        break;
+                    default:
+                        val = 0x800;
+                    }
+                    if (zoom_check(i_this, &zoom_check_pos[index], val)) {
+                        i_this->field_0x7b6 += 2;
+                        if (i_this->field_0x7b6 > 9) {
+                            i_this->field_0x752 = 40;
+                            i_this->field_0x7a8 = zoom_check_pos[index];
+                            i_this->field_0x7b4 = index;
+                            i_this->field_0x5be = 0;
+                        }
+                    }
+
+                }
+            } else {
+                i_this->field_0x7ba--;
+                if (i_this->field_0x7ba == 0) {
+                    i_this->field_0x752 = 80;
+                    i_this->field_0x754 = 0;
+                }
+            }
+        } else if (i_this->field_0x7b6 == 1 || i_this->field_0x7b6 == 21 || i_this->field_0x7b6 == 41) {
+            i_this->field_0x7b7++;
+            if (i_this->field_0x7b7 < 3) {
+                i_this->field_0x752 = 30;
+            } else {
+                i_this->field_0x752 = 10;
+            }
+            i_this->field_0x754 = 0;
+            i_this->field_0x5be = 1;
+        }
+        break;
+    case 1:
+        if (!i_this->eventInfo.checkCommandDemoAccrpt()) {
+            fopAcM_orderPotentialEvent(i_this, 2, 0xffff, 0);
+            i_this->eventInfo.onCondition(2);
+            return;
+        }
+        playerCamera->mCamera.Stop();
+        i_this->field_0x752 = 2;
+        i_this->field_0x754 = 0;
+        i_this->field_0x7bc = 65.0f;
+        playerCamera->mCamera.SetTrimSize(1);
+        daPy_getPlayerActorClass()->changeOriginalDemo();
+        daPy_getPlayerActorClass()->changeDemoMode(0x48, 1, 0, 0);
+        i_this->field_0x6a4 = 0;
+    case 2:
+        cMtx_YrotS(*calc_mtx, player->shape_angle.y);
+        temp.x = XREG_F(4) + 30.0f;
+        temp.y = XREG_F(5) + 140.0f;
+        temp.z = XREG_F(6) + 70.0f;
+        MtxPosition(&temp, &i_this->field_0x760);
+        i_this->field_0x760 += player->current.pos;
+        i_this->field_0x76c.x = player->current.pos.x;
+        i_this->field_0x76c.y = player->current.pos.y + 150.0f + XREG_F(2);
+        i_this->field_0x76c.z = player->current.pos.z;
+        cLib_addCalc2(&i_this->field_0x7bc, TREG_F(12) + 55.0f, 0.05f, 0.2f);
+        if (i_this->field_0x754 == 65) {
+            i_this->field_0x7bc = 50.0f;
+            i_this->field_0x76c.set(-36.0f, 155.0f, 407.0f);
+            i_this->field_0x760.set(-45.0f, 153.0f, 169.0f);
+            i_this->field_0x784.set(-27.0f, 155.0f, 103.0f);
+            i_this->field_0x778.set(-45.0f, 153.0f, 169.0f);
+            i_this->field_0x790.x = fabsf(i_this->field_0x778.x - i_this->field_0x760.x);
+            i_this->field_0x790.y = fabsf(i_this->field_0x778.y - i_this->field_0x760.y);
+            i_this->field_0x790.z = fabsf(i_this->field_0x778.z - i_this->field_0x760.z);
+            i_this->field_0x79c.x = fabsf(i_this->field_0x784.x - i_this->field_0x76c.x);
+            i_this->field_0x79c.y = fabsf(i_this->field_0x784.y - i_this->field_0x76c.y);
+            i_this->field_0x79c.z = fabsf(i_this->field_0x784.z - i_this->field_0x76c.z);
+            i_this->field_0x752 = 3;
+            i_this->field_0x7c0 = 0.0f;
+            i_this->field_0x754 = 0;
+        }
+        break;
+    case 3:
+        if (i_this->field_0x754 > 20) {
+            cam_3d_morf(i_this, 0.05f);
+            cLib_addCalc2(&i_this->field_0x7c0, BREG_F(7) + 0.01f, 1.0f, BREG_F(8) + 0.001f);
+        } 
+
+        if (i_this->field_0x754 > 159) {
+            if (i_this->field_0x754 == 160) {
+                i_this->mMsgFlow.init(i_this, 801, 0, NULL);
+                cXyz temp2;
+                temp2.set(-67.0f, 0.0f, 105.0f);
+                daPy_getPlayerActorClass()->setPlayerPosAndAngle(&temp2, -7739, 0);
+            }
+            i_this->mMsgFlow.doFlow(i_this, NULL, 0);
+            if (i_this->mMsgFlow.getNowMsgNo() == 8002) {
+                i_this->field_0x752 = 11;
+                i_this->field_0x754 = -20;
+                i_this->field_0x6a4 = 2;
+                i_this->field_0x618 = i_this->mPlayerAngleY;
+            }
+        }
+        break;
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 19:
+    case 20:
+    case 21:
+    case 30:
+    case 31:
+    case 35:
+    case 36:
+    case 40:
+    case 41:
+    case 42:
+    case 43:
+    case 50:
+    case 51:
+    case 52:
+    case 53:
+    case 60:
+    case 61:
+    case 62:
+    case 70:
+    case 71:
+    case 72:
+    case 73:
+    case 74:
+    case 75:
+    case 76:
+    case 77:
+    case 78:
+    case 79:
+    case 80:
+    case 81:
+        break;
+    }
 }
 
 /* 805483F4-80548640 0055D4 024C+00 1/1 0/0 0/0 .text            message_guide__FP15npc_henna_class
  */
-static void message_guide(npc_henna_class* param_0) {
-    // NONMATCHING
+static void message_guide(npc_henna_class* i_this) {
+    dComIfGp_getPlayer(LINK_PTR);
+    if (i_this->eventInfo.checkCommandTalk()) {
+        i_this->field_0x5b5 = 2;
+    }
+
+    if (i_this->field_0x5b5 == 2 && i_this->field_0x5b8.flags[1] != -1) {
+        fopAcM_OnStatus(i_this, 0);
+        cLib_onBit<u32>(i_this->attention_info.flags, 0xa);
+        i_this->attention_info.distances[1] = 2;
+        i_this->attention_info.distances[3] = 2;
+        i_this->eventInfo.onCondition(1);
+    
+        if (lrl == NULL || lrl->field_0x13b4 == 0) {
+            if (dComIfGp_event_runCheck() != FALSE) {
+                if (i_this->eventInfo.checkCommandTalk()) {
+                    if (i_this->field_0x5b8.flags[0] == 0) {
+                        i_this->field_0x5b8.flags[0] = 1;
+                        if (i_this->field_0x7d5 != 0 && (i_this->field_0x7d6 == 0 || (i_this->field_0x5bc & 3) == 0)) {
+                            i_this->mMsgFlow.init(i_this, 0x3c3, 0, NULL);
+                            i_this->field_0x7d5 = 0;
+                            i_this->field_0x7d6 = 1;
+                        }  else if (i_this->field_0x7d4 != 0) {
+                            i_this->field_0x7d4 = 0;
+                            i_this->mMsgFlow.init(i_this, 0x3cc, 0, NULL);
+                        } else if (i_this->field_0x7cc == 0) {
+                            if (i_this->field_0x5bc < 4) {
+                                i_this->mMsgFlow.init(i_this, 0x3cd, 0, NULL);
+                            } else if ((i_this->field_0x5bc & 1) != 0) {
+                                i_this->mMsgFlow.init(i_this, 0x3cd, 0, NULL);
+                            } else {
+                                i_this->mMsgFlow.init(i_this, 0x3ce, 0, NULL);
+                            }
+                        } else {
+                            i_this->mMsgFlow.init(i_this, 0x3ce, 0, NULL);
+                        }
+                    }
+                
+                    if (i_this->mMsgFlow.doFlow(i_this, NULL, 0) != 0) { 
+                        dComIfGp_event_reset();
+                        i_this->field_0x5b8.flags[0] = 0;
+                    }
+                }
+            } else {
+                i_this->field_0x5b8.flags[0] = 0;
+            }
+        }
+        return;
+    } else {
+        fopAcM_OffStatus(i_this, 0);
+        cLib_offBit<u32>(i_this->attention_info.flags, 0xa);
+        if (i_this->field_0x7e1 == 0) {
+            i_this->field_0x5b8.flags[0] = 0;
+        }
+    }
 }
 
 /* 80548640-8054868C 005820 004C+00 1/1 0/0 0/0 .text            s_boat_sub__FPvPv */
-static void s_boat_sub(void* param_0, void* param_1) {
-    // NONMATCHING
+static void* s_boat_sub(void* i_actor, void* i_data) {
+    if (fopAcM_IsActor(i_actor) && fopAcM_GetName(i_actor) == PROC_CANOE) {
+        return i_actor;
+    }
+    return NULL;
 }
 
 /* ############################################################################################## */
@@ -1980,17 +2216,17 @@ COMPILER_STRIP_GATE(0x8054ABA4, &lit_6432);
 #pragma pop
 
 /* 805488B8-805492A4 005A98 09EC+00 2/1 0/0 0/0 .text daNpc_Henna_Execute__FP15npc_henna_class */
-static void daNpc_Henna_Execute(npc_henna_class* param_0) {
+static void daNpc_Henna_Execute(npc_henna_class* i_this) {
     // NONMATCHING
 }
 
 /* 805492A4-805492AC 006484 0008+00 1/0 0/0 0/0 .text daNpc_Henna_IsDelete__FP15npc_henna_class */
-static bool daNpc_Henna_IsDelete(npc_henna_class* param_0) {
+static bool daNpc_Henna_IsDelete(npc_henna_class* i_this) {
     return true;
 }
 
 /* 805492AC-80549300 00648C 0054+00 1/0 0/0 0/0 .text daNpc_Henna_Delete__FP15npc_henna_class */
-static void daNpc_Henna_Delete(npc_henna_class* param_0) {
+static void daNpc_Henna_Delete(npc_henna_class* i_this) {
     // NONMATCHING
 }
 
