@@ -26,6 +26,9 @@ public:
     /* 80601960 */ b_gnd_class();
 
     bool checkAttackChance() { return field_0x2740 != 0; }
+    bool checkPiyo() { return field_0x1e08 != 0; }
+    bool checkRide() { return mDrawHorse != 0; }
+    BOOL checkZeldaEndDemoCut() { return FALSE; }
 
     /* 0x05AC */ request_of_phase_process_class mPhaseReq;
     /* 0x05B4 */ request_of_phase_process_class mHorsePhaseReq;
@@ -189,17 +192,12 @@ public:
 
 STATIC_ASSERT(sizeof(b_gnd_class) == 0x2790);
 
-class daB_GND_HIO_c
-#ifdef DEBUG
-: public JORReflexible
-#endif
-{
+class daB_GND_HIO_c : public JORReflexible {
 public:
     /* 805F4A4C */ daB_GND_HIO_c();
-#if DEBUG
-    virtual void genMessage(JORMContext*);
-#endif
     /* 80602230 */ virtual ~daB_GND_HIO_c() {}
+
+    void genMessage(JORMContext*);
 
     /* 0x04 */ s8 no;
     /* 0x08 */ f32 model_size;

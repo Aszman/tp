@@ -513,9 +513,9 @@ int dMsgFlow_c::messageNodeProc(fopAc_ac_c* param_1, fopAc_ac_c** param_2) {
         if (msg == NULL) {
             field_0x25 = 1;
         } else {
-            int mesgCamInfo = dComIfGp_getMesgCameraInfo();
-            if (mesgCamInfo != field_0x34) {
-                field_0x34 = mesgCamInfo;
+            int mesgCamInfoBasicID = dComIfGp_getMesgCameraInfo()->mBasicID;
+            if (mesgCamInfoBasicID != field_0x34) {
+                field_0x34 = mesgCamInfoBasicID;
             }
             switch (msg->mode) {
             case 2:
@@ -591,9 +591,8 @@ int dMsgFlow_c::eventNodeProc(fopAc_ac_c* param_0, fopAc_ac_c** param_1) {
         if (getParam(node->params) == 0) {
             int msgNum;
             if (daAlink_getAlinkActorClass()->getMidnaMsgNum() == 0xFFFF) {
-                s32 stayNo = dComIfGp_roomControl_getStayNo();
                 msgNum =
-                    dComIfGp_roomControl_getStatusRoomDt(stayNo)->getFileListInfo()->mMsg;
+                    dComIfGp_roomControl_getStatusRoomDt(dComIfGp_roomControl_getStayNo())->getFileListInfo()->mMsg;
             } else {
                 msgNum = daAlink_getAlinkActorClass()->getMidnaMsgNum();
                 daAlink_getAlinkActorClass()->setMidnaMsg();
@@ -1612,11 +1611,11 @@ int dMsgFlow_c::event020(mesg_flow_node_event* flow_node, fopAc_ac_c* actor) {
     int prm0 = getParam(flow_node->params);
     daPy_py_c* player = daPy_getPlayerActorClass();
     dStage_roomDt_c* room = dComIfGp_roomControl_getStatusRoomDt(fopAcM_GetRoomNo(actor));
-    stage_actor_data_class* actor_data = room->getPlayer()->mEntries;
+    stage_actor_data_class* actor_data = room->getPlayer()->m_entries;
 
     for (int i = 0; i < room->getPlayerNum(); i++, actor_data++) {
-        if ((u8)actor_data->mAngle.z == prm0) {
-            player->setPlayerPosAndAngle(&actor_data->mSpawnPos, player->current.angle.y, 0);
+        if ((u8)actor_data->base.angle.z == prm0) {
+            player->setPlayerPosAndAngle(&actor_data->base.position, player->current.angle.y, 0);
             break;
         }
     }
