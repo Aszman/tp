@@ -14,5 +14,8 @@ BOOL cDmrNowMidnaTalk();
 
 extern u8 cDmr_SkipInfo;
 extern JPTraceParticleCallBack4 JPTracePCB4;
+extern u8 data_80450C9A;
+extern u8 data_80450C9B;
+extern u8 data_80450C9C;
 
 #endif /* C_C_DAMAGEREACTION_H */

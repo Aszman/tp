@@ -67,8 +67,8 @@ BOOL cDmrNowMidnaTalk() {
 }
 
 /* 80450CA0-80450CA4 0001A0 0004+00 0/0 0/0 2/2 .sbss            None */
-extern u8 data_80450CA0[4];
-u8 data_80450CA0[4];
+// extern u8 data_80450CA0[4];
+u8 data_80450CA0;
 
 /* 80450CA4-80450CA8 0001A4 0004+00 1/1 1/1 1/1 .sbss            JPTracePCB4 */
 JPTraceParticleCallBack4 JPTracePCB4;

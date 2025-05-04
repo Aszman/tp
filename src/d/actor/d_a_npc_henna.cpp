@@ -11,6 +11,7 @@
 #include "f_op/f_op_kankyo_mng.h"
 #include "d/d_msg_object.h"
 #include "d/actor/d_a_canoe.h"
+#include "c/c_damagereaction.cpp"
 
 #include "dol2asm.h"
 #include "d/d_camera.h"
@@ -204,8 +205,6 @@ extern "C"  u8 g_Counter[12 + 4 /* padding */];
 extern "C" u8 mCurrentMtx__6J3DSys[48];
 extern "C" u8 sincosTable___5JMath[65536];
 extern "C"  u8 struct_80450C98[4];
-extern "C"  u8 cDmr_SkipInfo[4];
-extern "C"  u8 data_80450CA0[4];
 extern "C" u8 mAudioMgrPtr__10Z2AudioMgr[4 + 4 /* padding */];
 extern "C" void __register_global_object();
 
@@ -1429,10 +1428,12 @@ static void demo_camera_shop(npc_henna_class* i_this) {
     camera_class* playerCamera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_class* camera = dComIfGp_getCamera(0);
 
+    cXyz temp;
+
     if (!dComIfGp_event_runCheck() && !dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[465])){
         i_this->field_0x756++;
         if (i_this->field_0x756 < 200) {
-            cXyz temp(140.0f - player->current.pos.x, 0.0f, -100.0f - player->current.pos.z);
+            temp = cXyz(140.0f - player->current.pos.x, 0.0f, -100.0f - player->current.pos.z);
             if (temp.x * temp.x + temp.z + temp.z < 1500.0f) {
                 i_this->field_0x756 = 200;
                 i_this->field_0x752 = 35;
@@ -1440,7 +1441,6 @@ static void demo_camera_shop(npc_henna_class* i_this) {
         }
     }
 
-    cXyz temp;
     switch (i_this->field_0x752) {
     case 0:
         if (dComIfGp_event_runCheck()) {
@@ -1453,9 +1453,9 @@ static void demo_camera_shop(npc_henna_class* i_this) {
                         continue;
                     }
 
-                    f32 xDiff = zoom_check_pos[index].x - player->current.pos.x;
-                    f32 zDiff = zoom_check_pos[index].z - player->current.pos.z;
-                    if (JMAFastSqrt(xDiff * xDiff + zDiff * zDiff) < 120.0f) {
+                    temp.x = zoom_check_pos[index].x - player->current.pos.x;
+                    temp.z = zoom_check_pos[index].z - player->current.pos.z;
+                    if (JMAFastSqrt(temp.x * temp.x + temp.z * temp.z) < 120.0f) {
                         daPy_py_c::setLookPos(&zoom_check_pos[index]);
                     }
                 }
@@ -1583,9 +1583,132 @@ static void demo_camera_shop(npc_henna_class* i_this) {
         }
         break;
     case 10:
+        if (!i_this->eventInfo.checkCommandDemoAccrpt()) {
+            fopAcM_orderPotentialEvent(i_this, 2, 0xff7f, 0);
+            i_this->eventInfo.onCondition(2);
+            return;
+        }
+        playerCamera->mCamera.Stop();
+        i_this->field_0x752 = 11;
+        i_this->field_0x754 = 0;
+        i_this->field_0x7bc = 65.0f;
+        playerCamera->mCamera.SetTrimSize(1);
+        daPy_getPlayerActorClass()->changeOriginalDemo();
+        daPy_getPlayerActorClass()->changeDemoMode(1, 0, 0, 0);
     case 11:
+        cMtx_YrotS(*calc_mtx, i_this->mPlayerAngleY);
+        temp.x = 0.0f;
+        temp.y = XREG_F(0) + 160.0f;
+        temp.z = XREG_F(1) + 120.0f;
+        MtxPosition(&temp, &i_this->field_0x760);
+        i_this->field_0x760 += i_this->current.pos;
+        i_this->field_0x76c.x = i_this->current.pos.x;
+        i_this->field_0x76c.y = i_this->current.pos.y + 150.0f;
+        i_this->field_0x76c.y = i_this->current.pos.z;
+        cLib_addCalc2(&i_this->field_0x7bc, 55.0f, 0.5f, 5.0f);
+        if (i_this->field_0x754 == 0) {
+            if (i_this->field_0x5be == 1) {
+                i_this->field_0x5be = 2;
+                if (i_this->field_0x7b7 < 4) {
+                    i_this->mMsgFlow.init(i_this, 851, 0, NULL);
+                } else {
+                    i_this->mMsgFlow.init(i_this, 852, 0, NULL);
+                }
+                anm_init(i_this, npc_henna_class::ANIM_GLARE_A, -10.0f, 2, 1.0f);
+                i_this->field_0x5bc++;
+            } else {
+                if (!dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[462])) {
+                    dComIfGs_onEventBit(dSv_event_flag_c::saveBitLabels[462]);
+                    i_this->field_0x752 = 19;
+                    break;
+                }
+                if (!dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[465])) {
+                    if (i_this->field_0x709 == 0) {
+                        if (i_this->field_0x5bc == 0) {
+                            i_this->mMsgFlow.init(i_this, 803, 0, NULL);
+                        } else {
+                            i_this->mMsgFlow.init(i_this, 804, 0, NULL);
+                        }
+                    } else {
+                        i_this->mMsgFlow.init(i_this, 806, 0, NULL);
+                        i_this->field_0x6ba = 90;
+                    }
+                } else {
+                    if (i_this->field_0x709 == 0) {
+                        i_this->mMsgFlow.init(i_this, 805, 0, NULL);          
+                    } else {
+                        i_this->mMsgFlow.init(i_this, 807, 0, NULL);  
+                        i_this->field_0x6ba = 90;        
+                    }
+                    i_this->field_0x752 = 20;
+                    i_this->field_0x754 = 0;
+                }
+            }
+            i_this->field_0x5bc++;
+        } else if (i_this->field_0x5be == 2 && i_this->field_0x75c == 5) {
+            i_this->mBaseAnmID = 2;
+        }
+        if (i_this->field_0x754 >= 0 && i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            if (i_this->mBaseAnmID == 2 && i_this->field_0x7b7 > 3) {
+                dStage_changeScene(1, 0.0f, 0, fopAcM_GetRoomNo(i_this), 0 , -1);
+                data_80450C9C = 1;
+                data_80450C9A = 0;
+                data_80450C9B = 0;
+                return;
+            }
+            i_this->mBaseAnmID = 0;
+            if (i_this->field_0x5be == 2) {
+                i_this->field_0x752 = 100;
+                anm_init(i_this, npc_henna_class::ANIM_WAIT_A, -10.0f, 2, 1.0f);
+                i_this->field_0x5be = 0;
+            } else {
+                if (dMsgObject_getSelectCursorPos() == 0) {
+                    i_this->field_0x752 = 12;
+                } else {
+                    i_this->field_0x752 = 13;
+                }
+                i_this->field_0x754 = 0;
+            }
+        }
+        break;
     case 12:
     case 13:
+        if (i_this->field_0x754 <= 0) {
+            break;
+        }
+
+        if (i_this->field_0x754 == 1) {
+            if (i_this->field_0x752 != 12) {
+                i_this->mMsgFlow.init(i_this, 817, 0, NULL);
+            } else if (dComIfGs_getRupee() < 20) {
+                    i_this->mMsgFlow.init(i_this, 818, 0, NULL);
+            } else {
+                if (dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[465])) {
+                    i_this->mMsgFlow.init(i_this, 815, 0, NULL);
+                } else {
+                    i_this->mMsgFlow.init(i_this, 814, 0, NULL);
+                    dComIfGs_onEventBit(dSv_event_flag_c::saveBitLabels[465]);
+                    dComIfGs_onEventBit(dSv_event_flag_c::saveBitLabels[464]);
+                    data_80450CA0 = 1;
+                }
+                dComIfGp_setItemRupeeCount(-20);
+                dComIfGs_onEventBit(dSv_event_flag_c::saveBitLabels[463]);
+                i_this->field_0x5b6 = 1;
+            }
+        }
+        if (!i_this->mMsgFlow.doFlow(i_this, 0, NULL)) {
+            break;
+        }
+
+        if (i_this->field_0x5b6 == 0) {
+            i_this->field_0x752 = 100;
+        } else {
+            i_this->field_0x6ba = 100;
+            dStage_changeScene(1, 0.0, 0, fopAcM_GetRoomNo(i_this), 0, -1);
+            data_80450C9A = 0;
+            data_80450C9B = 0;
+        }
+        break;
     case 19:
     case 20:
     case 21:
@@ -1620,8 +1743,7 @@ static void demo_camera_shop(npc_henna_class* i_this) {
     }
 }
 
-/* 805483F4-80548640 0055D4 024C+00 1/1 0/0 0/0 .text            message_guide__FP15npc_henna_class
- */
+/* 805483F4-80548640 0055D4 024C+00 1/1 0/0 0/0 .text            message_guide__FP15npc_henna_class */
 static void message_guide(npc_henna_class* i_this) {
     dComIfGp_getPlayer(LINK_PTR);
     if (i_this->eventInfo.checkCommandTalk()) {
