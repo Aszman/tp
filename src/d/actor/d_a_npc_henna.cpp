@@ -12,6 +12,8 @@
 #include "d/d_msg_object.h"
 #include "d/actor/d_a_canoe.h"
 #include "c/c_damagereaction.cpp"
+#include "m_Do/m_Do_graphic.h"
+#include "d/actor/d_a_mg_fshop.h"
 
 #include "dol2asm.h"
 #include "d/d_camera.h"
@@ -278,8 +280,8 @@ SECTION_DATA static u16 check_kind[4] = {
 // };
 
 /* 8054AD14-8054AD1C 00008C 0008+00 1/1 0/0 0/0 .data            check_size$5372 */
-SECTION_DATA static u8 check_size[8] = {
-    0x00, 0x2B, 0x00, 0x32, 0x00, 0x38, 0x00, 0x3C,
+SECTION_DATA static u16 check_size[4] = {
+    0x2B, 0x32, 0x38, 0x3C,
 };
 
 /* 8054AD1C-8054AD6C -00001 0050+00 1/1 0/0 0/0 .data            @5825 */
@@ -1177,7 +1179,7 @@ static void cam_3d_morf(npc_henna_class* i_this, f32 i_scale) {
 
 /* ############################################################################################## */
 /* 8054B008-8054B00C 000090 0004+00 1/3 0/0 0/0 .bss             None */
-static u8 lbl_82_bss_90[4];
+static u8 lbl_82_bss_90[2];
 
 /* 8054518C-8054549C 00236C 0310+00 1/1 0/0 0/0 .text            demo_camera__FP15npc_henna_class */
 static void demo_camera(npc_henna_class* i_this) {
@@ -1198,7 +1200,6 @@ static void demo_camera(npc_henna_class* i_this) {
         i_this->field_0x752 = 0x65;
         i_this->field_0x754 = 0;
         camera->mCamera.Stop();
-        
         i_this->field_0x76c.set(-2815.0f, 66.0f, 4604.0f);
         i_this->field_0x760.set(-2914.0f, 144.0f, 5036.0f);
         i_this->field_0x7bc = 55.0f;
@@ -1422,13 +1423,24 @@ static u8 lit_5131[12];
 static cXyz zoom_check_pos[20];
 #pragma pop
 
+/* 8054B1EC-8054B1F4 000274 0004+04 0/0 0/0 0/0 .bss             koro2_reset */
+static u32 koro2_reset;
+
+
+static u8 DATA_8054B1F0;
+
+
 /* 80545638-805483F4 002818 2DBC+00 3/1 0/0 0/0 .text demo_camera_shop__FP15npc_henna_class */
 static void demo_camera_shop(npc_henna_class* i_this) {
     fopAc_ac_c* player = dComIfGp_getPlayer(LINK_PTR);
     camera_class* playerCamera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_class* camera = dComIfGp_getCamera(0);
 
+
     cXyz temp;
+    bool b_temp = true;
+    float f_temp;
+    s16 i_temp;
 
     if (!dComIfGp_event_runCheck() && !dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[465])){
         i_this->field_0x756++;
@@ -1710,24 +1722,477 @@ static void demo_camera_shop(npc_henna_class* i_this) {
         }
         break;
     case 19:
+        if (i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            i_this->field_0x752 = 100;
+            i_this->mBaseAnmID = 0;
+        }
+        break;
     case 20:
+        if (!i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            break;
+        }
+        i_this->mBaseAnmID = 0;
+        if (dMsgObject_getSelectCursorPos() == 0) {
+            i_this->field_0x752 = 12;
+        } else if (dMsgObject_getSelectCursorPos() == 1) {
+            i_this->field_0x752 = 21;
+        } else {
+            i_this->field_0x752 = 13;
+        }
+        i_this->field_0x754 = 0;
     case 21:
+        if (i_this->field_0x754 <= 0) {
+            break;
+        }
+        if (i_this->field_0x754 == 1) {
+            if (dComIfGs_getRupee() < 100) {
+                i_this->mMsgFlow.init(i_this, 0x332, 0, NULL);
+            } else {
+                i_this->mMsgFlow.init(i_this, 0x330, 0, NULL);
+                dComIfGp_setItemRupeeCount(-100);
+                dComIfGs_onEventBit(dSv_event_flag_c::saveBitLabels[0x1cf]);
+                dComIfGs_onEventBit(dSv_event_flag_c::saveBitLabels[0x1d0]);
+                data_80450CA0 = 1;
+                i_this->field_0x5b6 = 1;
+            }
+        }
+        if (!i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            break;
+        }
+        if (i_this->field_0x5b6 == 0) {
+            i_this->field_0x752 = 100;
+        } else {
+            i_this->field_0x6c2 = 100;
+            dStage_changeScene(1, 0.0, 0, fopAcM_GetRoomNo(i_this), 0, -1);
+            data_80450C9A = 0;
+            data_80450C9B = 0;
+        }
+        break;
     case 30:
+        if (!i_this->eventInfo.checkCommandDemoAccrpt()) {
+            fopAcM_orderPotentialEvent(i_this, 2, -1, 0);
+            i_this->eventInfo.onCondition(2);
+            return;
+        }
+        playerCamera->mCamera.Stop();
+        i_this->field_0x752 = 31;
+        i_this->field_0x754 = 0;
+        playerCamera->mCamera.SetTrimSize(1);
     case 31:
+        if (i_this->field_0x754 <= 4) {
+            break;
+        }
+        if (i_this->field_0x754 == 5) {
+            if (i_this->field_0x7b5 >= 26) {
+                i_this->mMsgFlow.init(i_this, 0x352, 0, NULL);
+            } else if (i_this->field_0x7b5 < 6) {
+                i_this->mMsgFlow.init(i_this, 0x350, 0, NULL);
+            } else {
+                i_this->mMsgFlow.init(i_this, 0x351, 0, NULL);
+            }
+            i_this->field_0x7b5 = 0;
+            i_this->mBaseAnmID = 2;
+        }
+        if (i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            i_this->field_0x752 = 101;
+            i_this->mBaseAnmID = 0;
+        }
+        break;
     case 35:
+        if (!i_this->eventInfo.checkCommandDemoAccrpt()) {
+            fopAcM_orderPotentialEvent(i_this, 2, -1, 0);
+            i_this->eventInfo.onCondition(2);
+            return;
+        }
+        playerCamera->mCamera.Stop();
+        i_this->field_0x752 = 36;
+        i_this->field_0x754 = 0;
+        playerCamera->mCamera.SetTrimSize(1);
     case 36:
+        if (i_this->field_0x754 <= 4) {
+            break;
+        }
+        if (i_this->field_0x754 == 5) {
+            i_this->mMsgFlow.init(i_this, 0x322, 0, NULL);
+        }
+        if (i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            i_this->field_0x752 = 101;
+        }
+        break;
     case 40:
+        if (!i_this->eventInfo.checkCommandDemoAccrpt()) {
+            fopAcM_orderPotentialEvent(i_this, 2, -1, 0);
+            i_this->eventInfo.onCondition(2);
+            return;
+        }
+        playerCamera->mCamera.Stop();
+        i_this->field_0x752 = 41;
+        i_this->field_0x754 = 0;
+        i_this->field_0x7bc = 50.0f;
+        playerCamera->mCamera.SetTrimSize(1);
+        daPy_getPlayerActorClass()->onPlayerNoDraw();
+        temp = camera->lookat.center - camera->lookat.eye;
+        i_this->field_0x758 = cM_atan2s(temp.x, temp.z);
+        i_this->field_0x75c = -cM_atan2s(temp.y, JMAFastSqrt(temp.x * temp.x + temp.z * temp.z));
+        i_this->field_0x7c4 = temp.abs();
     case 41:
+        i_this->field_0x760 = camera->lookat.eye;
+        cMtx_YrotS(*calc_mtx, i_this->field_0x758);
+        cMtx_XrotM(*calc_mtx, i_this->field_0x75c);
+        temp.x = 0;
+        temp.y = 0;
+        temp.z = i_this->field_0x7c4;
+        MtxPosition(&temp, &i_this->field_0x76c);
+        i_this->field_0x76c += i_this->field_0x760;
+        temp = i_this->field_0x7a8 - camera->lookat.eye;
+        if (i_this->field_0x7b4 != 8 && i_this->field_0x7b4 != 7) {
+            cLib_addCalcAngleS2(&i_this->field_0x758, cM_atan2s(temp.x, temp.z), 8, 2048);
+            cLib_addCalcAngleS2(&i_this->field_0x75c, -cM_atan2s(temp.y, JMAFastSqrt(temp.x * temp.x + temp.z * temp.z)), 8, 2048);
+        }
+        switch (i_this->field_0x7b4) {
+        case 0:
+        case 2:
+        case 4:
+        case 6:
+        case 7:
+        case 8:
+            f_temp = (BREG_F(8) + 200.0f - temp.abs()) * (BREG_F(9) + 0.4f) + 50.0f;
+            if (f_temp > 80.0f) {
+                f_temp = 80.0f;
+            } else if (f_temp < 50.0f) {
+                f_temp = 50.0f;
+            }
+            cLib_addCalc2(&i_this->field_0x7bc, f_temp, 0.2f, 2.0f);
+        default:
+            f_temp = (BREG_F(8) + 130.0f - temp.abs()) * (BREG_F(9) + 0.4f) + 50.0f;
+            if (f_temp > 70.0f) {
+                f_temp = 70.0f;
+            } else if (f_temp < 30.0f) {
+                f_temp = 30.0f;
+            }
+            cLib_addCalc2(&i_this->field_0x7bc, f_temp, 0.2f, 2.0f);
+        }
+
+        if (i_this->field_0x754 <= 14) {
+            break;
+        }
+        
+        if (i_this->field_0x754 == 15) {
+            s16 iitemp = 0;
+            switch (i_this->field_0x7b4) {
+            case 0:
+                for (int i = 0; i < 4; i++) {
+                    u8 rev = dComIfGs_getEventReg(check_kind[i]);
+                    if (check_size[i] <= rev) {
+                        iitemp++;
+                    }
+                    if (iitemp == 0) {
+                        i_this->mMsgFlow.init(i_this, 0x333, 0, NULL);
+                    } else if (iitemp == 4) {
+                        i_this->mMsgFlow.init(i_this, 0x336, 0, NULL);
+                    } else if (dComIfGs_getEventReg(check_kind[1]) < 10) {
+                        i_this->mMsgFlow.init(i_this, 0x334, 0, NULL);
+                    } else {
+                        i_this->mMsgFlow.init(i_this, 0x335, 0, NULL);
+                    }
+                }
+                break;
+            case 2:
+                if (dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[469])) {
+                    i_this->mMsgFlow.init(i_this, 0x338, 0, NULL);
+                } else {
+                    i_this->mMsgFlow.init(i_this, 0x337, 0, NULL);
+                }
+                break;
+            case 3:
+                i_this->mMsgFlow.init(i_this, 0x339, 0, NULL);
+                break;
+            case 4:
+                i_this->mMsgFlow.init(i_this, 0x33a, 0, NULL);
+                break;
+            case 5:
+                i_this->mMsgFlow.init(i_this, 0x33b, 0, NULL);
+                data_80450C9D |= 128;
+                break;
+            case 6:
+                i_this->mMsgFlow.init(i_this, 0x33d, 0, NULL);
+                break;
+            case 7:
+                i_this->mMsgFlow.init(i_this, 0x33e, 0, NULL);
+                break;
+            case 8:
+                if (dKy_getEnvlight()->raincnt != 0) {
+                    i_this->mMsgFlow.init(i_this, 0x347, 0, NULL);
+                } else {
+                    int dayTime = dKy_getEnvlight()->daytime / 15.0f;
+                    if (dayTime < 8 || dayTime > 16) {
+                        i_this->mMsgFlow.init(i_this, 0x371, 0, NULL);
+                    } else {
+                        i_this->mMsgFlow.init(i_this, 0x346, 0, NULL);
+                    }
+                }
+                break;
+            case 11:
+                i_this->mMsgFlow.init(i_this, 0x35f, 0, NULL);
+                break;
+            case 12:
+                i_this->mMsgFlow.init(i_this, 0x344, 0, NULL);
+                break;
+            case 13:
+                i_this->mMsgFlow.init(i_this, 0x342, 0, NULL);
+                break;
+            case 14:
+                i_this->mMsgFlow.init(i_this, 0x343, 0, NULL);
+                break;
+            case 15:
+                i_this->mMsgFlow.init(i_this, 0x341, 0, NULL);
+                break;
+            case 16:
+                i_this->mMsgFlow.init(i_this, 0x340, 0, NULL);
+                break;
+            case 17:
+                i_this->mMsgFlow.init(i_this, 0x33f, 0, NULL);
+                break;
+            case 18:
+                i_this->mMsgFlow.init(i_this, 0x33c, 0, NULL);
+                break;
+            case 19:
+                if (dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[821])) {
+                    i_this->mMsgFlow.init(i_this, 0x366, 0, NULL);
+                } else {
+                    dComIfGp_event_offHindFlag(128);
+                    dComIfGp_setMessageCountNumber(lbl_82_bss_90[1] % 8 + lbl_82_bss_90[1] / 8 * 10 + 11);
+                    if (lbl_82_bss_90[1] == 0) {
+                        i_this->mMsgFlow.init(i_this, 0x348, 0, NULL);
+                    } else if (lbl_82_bss_90[1] == 63) {
+                        i_this->mMsgFlow.init(i_this, 0x370, 0, NULL);
+                    } else {
+                        i_this->mMsgFlow.init(i_this, 0x34b, 0, NULL);
+                    }
+                }
+            }
+        }
+        if (!i_this->mMsgFlow.doFlow(i_this, NULL, 0)){
+            break;
+        }
+
+        if (i_this->field_0x7b4 != 19) {
+            i_this->field_0x752 = 101;
+            daPy_getPlayerActorClass()->offPlayerNoDraw();
+            i_this->field_0x5bc++;
+            if (i_this->field_0x7b4 == 16) {
+                i_this->field_0x6a4 = 10;
+                i_this->field_0x708 = 1;
+            }
+            break;
+        }
+
+        if (dMsgObject_getSelectCursorPos() != NULL) {
+            i_this->field_0x754 = 0;
+            i_this->field_0x752 = 43;
+            break;
+        }
+
+        if (!dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[821])) {
+            if (dComIfGs_getRupee() < 5) {
+                i_this->field_0x754 = 0;
+                i_this->field_0x752 = 42;
+            } else {
+                i_this->field_0x752 = 70;
+                i_this->field_0x754 = 0;
+                dComIfGp_setItemRupeeCount(-5);
+                mDoGph_gInf_c::fadeOut_f(0.1f, g_blackColor);
+                koro2_reset = 0;
+            }
+        } else {
+            i_this->field_0x752 = 77;
+            i_this->field_0x754 = 0;
+            mDoGph_gInf_c::fadeOut(0.1, g_blackColor);
+            koro2_reset = 0;
+        }
+        break;
     case 42:
+        if (i_this->field_0x754 == 1) {
+            i_this->mMsgFlow.init(i_this, 0x349, 0, NULL);
+        }
+        if (i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            i_this->field_0x752 = 75;
+            i_this->field_0x5bc += 1;
+        }
+        break;
     case 43:
+        if (i_this->field_0x754 == 1) {
+            i_this->mMsgFlow.init(i_this, 0x34a, 0, NULL);
+            i_this->field_0x752 = 42;
+        }
+        break;
     case 50:
+        if (!i_this->eventInfo.checkCommandDemoAccrpt()) {
+            fopAcM_orderPotentialEvent(i_this, 2, 0xffff, 0);
+            i_this->eventInfo.onCondition(2);
+            dComIfGp_event_reset();
+            return;
+        }
+        playerCamera->mCamera.Stop();
+        i_this->field_0x752 = 51;
+        i_this->field_0x754 = 0;
+        i_this->field_0x7bc = 65.0f;
+        playerCamera->mCamera.SetTrimSize(1);
+        daPy_getPlayerActorClass()->changeOriginalDemo();
+        daPy_getPlayerActorClass()->changeDemoMode(1, 0, 0, 0);
+        i_this->field_0x7bc = 55.0f;
+        i_this->field_0x76c.set(-440.0f, 130.0f, 380.0f);
+        i_this->field_0x760.set(-263.0f, 142.0f, 162.0f);
+        i_this->field_0x784.set(-538.0f, 130.0f, 116.0f);
+        i_this->field_0x778.set(-263.0f, 142.0f, 162.0f);
+        i_this->field_0x790.x = fabsf(i_this->field_0x778.x - i_this->field_0x760.x);
+        i_this->field_0x790.y = fabsf(i_this->field_0x778.y - i_this->field_0x760.y);
+        i_this->field_0x790.z = fabsf(i_this->field_0x778.z - i_this->field_0x760.z);
+        i_this->field_0x79c.x = fabsf(i_this->field_0x784.x - i_this->field_0x76c.x);
+        i_this->field_0x79c.y = fabsf(i_this->field_0x784.y - i_this->field_0x76c.y);
+        i_this->field_0x79c.z = fabsf(i_this->field_0x784.z - i_this->field_0x76c.z);
     case 51:
+        if (i_this->field_0x754 <= 14) {
+            break;
+        }
+
+        if (i_this->field_0x754 == 15) {
+            if (data_80450C9A == 0) {
+                i_this->mMsgFlow.init(i_this, 0x328, 0, NULL);
+            } else if (data_80450C9B == 2) {
+                i_this->mMsgFlow.init(i_this, 0x329, 0, NULL);
+            } else if (data_80450C9B == 3) {
+                i_this->mMsgFlow.init(i_this, 0x32a, 0, NULL);
+            } else if (data_80450C9B == 4) {
+                i_this->mMsgFlow.init(i_this, 0x32b, 0, NULL);
+            } else if (data_80450C9B == 1) {
+                i_this->mMsgFlow.init(i_this, 0x32d, 0, NULL);
+            } else {
+                i_this->mMsgFlow.init(i_this, 0x32c, 0, NULL);
+            }
+        }
+
+        if (data_80450C9B < 2) {
+            if (i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+                i_this->field_0x752 = 100;
+            }
+        } else {
+            i_this->mMsgFlow.doFlow(i_this, NULL, 0);
+            if (i_this->field_0x754 > 50) {
+                i_this->field_0x752 = 52;
+                i_this->field_0x754 = 0;
+            }
+            
+        }
+        break;
     case 52:
+        if (dComIfG_getTrigA(0) != 0 && i_this->field_0x754 < 30) {
+            i_this->field_0x754 = 30;
+        }
+        if (i_this->field_0x754 > 29) {
+            cam_3d_morf(i_this, 2.0f);
+            cLib_addCalc2(&i_this->field_0x7c0,  BREG_F(7) + 0.06f, 1.0f, BREG_F(8) + 0.02f);
+            if (i_this->field_0x754 > 50) {
+                cLib_addCalc2(&i_this->field_0x7bc,  TREG_F(12) + 40.0f, 0.1f, 1.0f);
+            }
+        }
+        if (i_this->mMsgFlow.doFlow(i_this, NULL, 0) && i_this->field_0x754 > 60) {
+            daPy_getPlayerActorClass()->setPlayerPosAndAngle(&player->current.pos, -20452, 0);
+            i_this->field_0x752 = 53;
+            i_this->field_0x754 = 0;
+        }
+        break;
     case 53:
+        if (i_this->field_0x754 > 30) {
+            i_this->field_0x752 = 100;
+        }
+        break;
     case 60:
+        if (!i_this->eventInfo.checkCommandDemoAccrpt()) {
+            fopAcM_orderPotentialEvent(i_this, 2, 0xffff, 0);
+            i_this->eventInfo.onCondition(2);
+            return;
+        }
+        playerCamera->mCamera.Stop();
+        i_this->field_0x752 = 61;
+        i_this->field_0x754 = 0;
+        i_this->field_0x7bc = 65.0f;
+        playerCamera->mCamera.SetTrimSize(1);
+        daPy_getPlayerActorClass()->changeOriginalDemo();
+        daPy_getPlayerActorClass()->changeDemoMode(1, 0, 0 ,0);
     case 61:
+        cMtx_YrotS(*calc_mtx, i_this->mPlayerAngleY);
+        temp.x = 0.0f;
+        temp.y = XREG_F(0) + 160.0f;
+        temp.z = XREG_F(1) + 120.0f;
+        MtxPosition(&temp, &i_this->field_0x760);
+        i_this->field_0x760 +=i_this->current.pos;
+        i_this->field_0x76c.x = i_this->current.pos.x;
+        i_this->field_0x76c.y = i_this->current.pos.y + 150.0f + XREG_F(2);
+        i_this->field_0x76c.z = i_this->current.pos.z;
+        cLib_addCalc2(&i_this->field_0x7bc, 55.0f, 0.5f, 5.0f);
+        if (i_this->field_0x754 == 0) {
+            i_this->mMsgFlow.init(i_this, 0x355, 0, NULL);
+            anm_init(i_this, npc_henna_class::ANIM_GLARE_A, -10.0f, 2, 1.0f);
+            i_this->mBaseAnmID = 2;
+        }
+        if (i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            i_this->field_0x754 = 0;
+            i_this->field_0x752 = 62;
+            anm_init(i_this, npc_henna_class::ANIM_WAIT_A, -10.0f, 2, 1.0f);
+        }
+        break;
     case 62:
+        if (i_this->field_0x754 <= 0) {
+            break;
+        }
+        if (i_this->field_0x754 == 1) {
+            i_this->mMsgFlow.init(i_this, 0x356, 0, NULL);
+        }
+        if (i_this->field_0x754 == 5) {
+            i_this->mBaseAnmID = 2;
+        }
+        if (i_this->mMsgFlow.doFlow(i_this, NULL, 0)) {
+            i_this->mBaseAnmID = 0;
+            i_this->field_0x752 = 100;
+        }
+        break;
     case 70:
+        if (i_this->field_0x754 == 10) {
+            fshop_class* fish_shop = (fshop_class*)fpcM_Search(s_shop_sub, i_this);
+            if (fish_shop != NULL) {
+                fish_shop->field_0x4010 = 1;
+            }
+            temp.set(171.0f, 0.0f, 432.0f);
+            daPy_getPlayerActorClass()->setPlayerPosAndAngle(&temp, 0x4000, 0);
+            i_this->field_0x7bc = 20.0f;
+            playerCamera->mCamera.SetTrimSize(1);
+        }
+        if (i_this->field_0x754 == 11) {
+            fshop_class* fish_shop = (fshop_class*)fpcM_Search(s_shop_sub, i_this);
+            i_this->field_0x76c = fish_shop->field_0x4014;
+            i_this->field_0x76c.x += WREG_F(0); 
+            i_this->field_0x76c.y += WREG_F(1); 
+            i_this->field_0x76c.z += WREG_F(2);
+            i_this->field_0x760 = fish_shop->field_0x4014;
+            i_this->field_0x760.x += WREG_F(3) + -900.0f;
+            i_this->field_0x760.y += WREG_F(4) + 1300.0f;
+            i_this->field_0x760.z += WREG_F(5);
+        }
+        if (i_this->field_0x754 == 18) {
+            fshop_class* fish_shop = (fshop_class*) fpcM_Search(s_koro2ball_sub, i_this);
+            if (fish_shop != NULL) {
+                fish_shop->field_0x0572 = 1;
+            }
+        }
+        if (i_this->field_0x754 == 20) {
+            mDoGph_gInf_c::fadeIn(0.1f, g_blackColor);
+            i_this->mMsgFlow.init(i_this, 0x34c, 0, NULL);
+            i_this->field_0x752 = 71;
+            i_this->field_0x754 = 0;
+            i_this->field_0x756 = 200;
+        }
+        break;
     case 71:
     case 72:
     case 73:
@@ -1741,6 +2206,10 @@ static void demo_camera_shop(npc_henna_class* i_this) {
     case 81:
         break;
     }
+    #ifdef DEBUG
+            fshop_class* fish_shop = (fshop_class*) fpcM_Search(s_shop_sub, i_this);
+            fish_shop->field_0x400c = DATA_8054B1F0;
+#endif
 }
 
 /* 805483F4-80548640 0055D4 024C+00 1/1 0/0 0/0 .text            message_guide__FP15npc_henna_class */
@@ -2216,11 +2685,7 @@ SECTION_RODATA static f32 const lit_6064 = 250.0f;
 COMPILER_STRIP_GATE(0x8054AB6C, &lit_6064);
 #pragma pop
 
-/* 8054B1EC-8054B1F4 000274 0004+04 0/0 0/0 0/0 .bss             koro2_reset */
-#pragma push
-#pragma force_active on
-static u8 koro2_reset[4 + 4 /* padding */];
-#pragma pop
+
 
 /* 8054B1F4-8054B1FC 00027C 0004+04 0/0 0/0 0/0 .bss             old_stick_x$5644 */
 #pragma push
