@@ -33,8 +33,7 @@
     const fpc_ProcID procID = fopAcM_GetID(i_this);                                                \
     "Create -> " actor_name_str "(id=%d)\n"
 
-#define fopAcM_RegisterDelete(i_this, actor_name_str)                                              \
-    "Delete -> " actor_name_str "\n"
+#define fopAcM_RegisterDelete(i_this, actor_name_str) "Delete -> " actor_name_str "\n"
 
 #define fopAcM_RegisterCreate(actor_class, i_this, actor_name_str)                                 \
     static_cast<actor_class*>(i_this);                                                             \
@@ -107,8 +106,8 @@ dBgS& dComIfG_Bgsp();
 
 class dKy_tevstr_c;
 class cBgS_PolyInfo;
-typedef int (*heapCallbackFunc)(fopAc_ac_c*);
 typedef int (*createFunc)(void*);
+typedef int (*heapCallbackFunc)(fopAc_ac_c*);
 
 struct DOUBLE_POS {
     double x, y, z;
@@ -136,7 +135,14 @@ enum fopAcM_STATUS {
     /* 0x0040000 */ fopAcM_STATUS_UNK_400000 = 1 << 18,
     /* 0x0080000 */ fopAcM_STATUS_UNK_800000 = 1 << 19,
     /* 0x0100000 */ fopAcM_STATUS_HOOK_CARRY_NOW = 1 << 20,
-    /* 0x8000000 */ fopAcM_STATUS_UNK_8000000 = 1 << 27,
+    /* 0x0200000 */ fopAcM_STATUS_UNK_2000000 = 1 << 21,
+    /* 0x0400000 */ fopAcM_STATUS_UNK_4000000 = 1 << 22,
+    /* 0x0800000 */ fopAcM_STATUS_UNK_8000000 = 1 << 23,
+    /* 0x1000000 */ fopAcM_STATUS_UNK_10000000 = 1 << 24,
+    /* 0x2000000 */ fopAcM_STATUS_UNK_20000000 = 1 << 25,
+    /* 0x4000000 */ fopAcM_STATUS_UNK_40000000 = 1 << 26,
+    /* 0x8000000 */ fopAcM_STATUS_UNK_80000000 = 1 << 27,
+    /* 0x8000000 */ fopAcM_STATUS_HAWK_CARRY_NOW = 1 << 31,
 };
 
 inline s8 fopAcM_GetRoomNo(const fopAc_ac_c* i_actor) {
@@ -175,7 +181,7 @@ enum fopAcM_CARRY {
     /* 0x80 */ fopAcM_CARRY_CHICKEN = 0x80,
 };
 
-inline u32 fopAcM_CheckCarryType(fopAc_ac_c* actor, fopAcM_CARRY type) {
+inline u32 fopAcM_CheckCarryType(const fopAc_ac_c* actor, fopAcM_CARRY type) {
     return actor->carryType & type;
 }
 
@@ -220,7 +226,7 @@ inline fopAc_ac_c* fopAcM_Search(fopAcIt_JudgeFunc i_judgeFunc, void* i_process)
 }
 
 inline fopAc_ac_c* fopAcM_SearchByID(fpc_ProcID id) {
-    return (fopAc_ac_c*)fopAcIt_Judge((fopAcIt_JudgeFunc)fpcSch_JudgeByID, &id);
+    return (fopAc_ac_c*)fopAcIt_Judge(fpcSch_JudgeByID, &id);
 }
 
 inline fpc_ProcID fopAcM_GetLinkId(const fopAc_ac_c* i_actor) {
@@ -277,6 +283,14 @@ inline void fopAcM_setHookCarryNow(fopAc_ac_c* actor) {
 
 inline void fopAcM_cancelHookCarryNow(fopAc_ac_c* actor) {
     fopAcM_OffStatus(actor, fopAcM_STATUS_HOOK_CARRY_NOW);
+}
+
+inline void fopAcM_setHawkCarryNow(fopAc_ac_c* actor) {
+    fopAcM_OnStatus(actor, fopAcM_STATUS_HAWK_CARRY_NOW);
+}
+
+inline void fopAcM_cancelHawkCarryNow(fopAc_ac_c* actor) {
+    fopAcM_OffStatus(actor, fopAcM_STATUS_HAWK_CARRY_NOW);
 }
 
 inline s8 fopAcM_GetHomeRoomNo(const fopAc_ac_c* i_actor) {
@@ -380,7 +394,8 @@ inline int fopAcM_GetCullSize(const fopAc_ac_c* i_actor) {
 }
 
 inline BOOL fopAcM_CULLSIZE_IS_BOX(int i_culltype) {
-    return (i_culltype >= 0 && i_culltype < fopAc_CULLBOX_CUSTOM_e) || i_culltype == fopAc_CULLBOX_CUSTOM_e;
+    return (i_culltype >= 0 && i_culltype < fopAc_CULLBOX_CUSTOM_e) ||
+           i_culltype == fopAc_CULLBOX_CUSTOM_e;
 }
 
 inline const cXyz& fopAcM_getCullSizeSphereCenter(const fopAc_ac_c* i_actor) {
@@ -401,6 +416,10 @@ inline void fopAcM_SetOldPosition(fopAc_ac_c* i_actor, f32 x, f32 y, f32 z) {
 
 inline void fopAcM_SetHomePosition(fopAc_ac_c* i_actor, f32 x, f32 y, f32 z) {
     i_actor->home.pos.set(x, y, z);
+}
+
+inline void fopAcM_SetAngle(fopAc_ac_c* i_actor, s16 x, s16 y, s16 z) {
+    i_actor->current.angle.set(x, y, z);
 }
 
 inline void dComIfGs_onSwitch(int i_no, int i_roomNo);
@@ -455,6 +474,11 @@ inline void fopAcM_onDraw(fopAc_ac_c* i_actor) {
 
 inline void fopAcM_offDraw(fopAc_ac_c* i_actor) {
     fopDwTg_DrawQTo(&i_actor->draw_tag);
+}
+
+inline int fopAcM_monsSeStart(const fopAc_ac_c* i_actor, u32 i_soundId, u32 param_2) {
+    return mDoAud_monsSeStart(i_soundId, &i_actor->eyePos, fopAcM_GetID(i_actor), param_2,
+                       dComIfGp_getReverb(fopAcM_GetRoomNo(i_actor)));
 }
 
 void fopAcM_initManager();
@@ -602,8 +626,7 @@ fpc_ProcID fopAcM_createItemFromTable(cXyz const* i_pos, int i_tableNo, int i_it
                                       bool i_createDirect);
 
 fpc_ProcID fopAcM_createDemoItem(const cXyz* i_pos, int i_itemNo, int i_itemBitNo,
-                                 const csXyz* i_angle, int i_roomNo, const cXyz* scale,
-                                 u8 param_7);
+                                 const csXyz* i_angle, int i_roomNo, const cXyz* scale, u8 param_7);
 
 fpc_ProcID fopAcM_createItemForBoss(const cXyz* i_pos, int i_itemNo, int i_roomNo,
                                     const csXyz* i_angle, const cXyz* i_scale, f32 i_speedF,
@@ -712,6 +735,14 @@ inline s32 fopAcM_seenPlayerAngleY(const fopAc_ac_c* i_actor) {
     return fopAcM_seenActorAngleY(i_actor, dComIfGp_getPlayer(0));
 }
 
+inline s16 fopAcM_toActorShapeAngleY(const fopAc_ac_c* i_actorA, const fopAc_ac_c* i_actorB) {
+    return i_actorA->shape_angle.y - i_actorB->shape_angle.y;
+}
+
+inline s16 fopAcM_toPlayerShapeAngleY(const fopAc_ac_c* i_actor) {
+    return fopAcM_toActorShapeAngleY(i_actor, dComIfGp_getPlayer(0));
+}
+
 s8 dComIfGp_getReverb(int roomNo);
 
 inline void fopAcM_seStartCurrent(const fopAc_ac_c* actor, u32 sfxID, u32 param_2) {
@@ -738,7 +769,7 @@ inline void fopAcM_offActor(fopAc_ac_c* i_actor, u32 flag) {
 }
 
 inline void fopAcM_OnCarryType(fopAc_ac_c* i_actor, fopAcM_CARRY param_2) {
-    i_actor->carryType |= param_2;
+    i_actor->carryType |= (u8) param_2;
 }
 
 inline void fopAcM_OffCarryType(fopAc_ac_c* i_actor, fopAcM_CARRY param_2) {
@@ -767,21 +798,23 @@ inline void fopAcM_effSmokeSet2(u32* param_0, u32* param_1, cXyz const* param_2,
     fopAcM_effSmokeSet1(param_0, param_1, param_2, param_3, param_4, param_5, 0);
 }
 
-inline void fopAcM_setWarningMessage_f(const fopAc_ac_c* i_actor, const char* i_filename, int i_line, const char* i_msg, ...) {
+inline void fopAcM_setWarningMessage_f(const fopAc_ac_c* i_actor, const char* i_filename,
+                                       int i_line, const char* i_msg, ...) {
 #ifdef DEBUG
     /* va_list args;
     va_start(args, i_msg);
 
     char buf[64];
-    snprintf(buf, sizeof(buf), "<%s> %s", dStage_getName(fopAcM_GetProfName(i_actor), i_actor->subtype), i_msg);
-    setWarningMessage_f_va(JUTAssertion::getSDevice(), i_filename, i_line, buf, args);
+    snprintf(buf, sizeof(buf), "<%s> %s", dStage_getName(fopAcM_GetProfName(i_actor),
+    i_actor->subtype), i_msg); setWarningMessage_f_va(JUTAssertion::getSDevice(), i_filename,
+    i_line, buf, args);
 
     va_end(args); */
 #endif
 }
 
 #ifdef DEBUG
-#define fopAcM_setWarningMessage(i_actor, i_filename, i_line, i_msg) \
+#define fopAcM_setWarningMessage(i_actor, i_filename, i_line, i_msg)                               \
     fopAcM_setWarningMessage_f(i_actor, i_filename, i_line, i_msg)
 #else
 #define fopAcM_setWarningMessage(...)
@@ -798,6 +831,7 @@ public:
     static cXyz* getCrossP() { return mLineCheck.GetCrossP(); }
     static bool lineCheck(const cXyz*, const cXyz*, const fopAc_ac_c*);
     static bool getTriPla(cM3dGPla* o_tri) { return dComIfG_Bgsp().GetTriPla(mLineCheck, o_tri); }
+    static s32 getWallCode() { return dComIfG_Bgsp().GetWallCode(mLineCheck); }
     static bool checkWallHit() {
         cM3dGPla poly;
         getTriPla(&poly);

@@ -394,7 +394,7 @@ public:
     void offCollectMirror(u8 i_item);
     BOOL isCollectMirror(u8 i_item) const;
 
-    u8 getPohNum() { return mPohNum; }
+    u8 getPohNum() const { return mPohNum; }
 
 private:
     /* 0x0 */ u8 mItem[8];
@@ -648,10 +648,10 @@ private:
 class dSv_event_c {
 public:
     void init();
-    void onEventBit(u16 i_no);
-    void offEventBit(u16 i_no);
-    int isEventBit(u16 i_no) const;
-    void setEventReg(u16 i_reg, u8 i_no);
+    void onEventBit(const u16 i_no);
+    void offEventBit(const u16 i_no);
+    int isEventBit(const u16 i_no) const;
+    void setEventReg(const u16 i_reg, u8 i_no);
     u8 getEventReg(u16 i_reg) const;
 
     void* getPEventBit() { return (void*)mEvent; }
