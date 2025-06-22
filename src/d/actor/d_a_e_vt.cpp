@@ -12,6 +12,7 @@
 #include "d/d_com_inf_game.h"
 #include "d/d_s_play.h"
 #include "d/d_camera.h"
+UNK_REL_DATA;
 #include "f_op/f_op_actor_enemy.h"
 
 #define WL_CUT_TYPE_SMALL 1
@@ -72,21 +73,6 @@ enum daE_VA_JOINT {
     JNT_TAIL_CLOTH_02,
     JNT_TAIL_CLOTH_03,
     JNT_TAIL_CLOTH_04,
-};
-
-/* 807CEF08-807CEF14 000000 000C+00 3/3 0/0 0/0 .data            cNullVec__6Z2Calc */
-static u8 cNullVec__6Z2Calc[12] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
-
-/* 807CEF14-807CEF28 00000C 0004+10 0/0 0/0 0/0 .data            @1787 */
-static u32 lit_1787[1 + 4 /* padding */] = {
-    0x02000201,
-    /* padding */
-    0x40080000,
-    0x00000000,
-    0x3FE00000,
-    0x00000000,
 };
 
 namespace
@@ -1566,7 +1552,7 @@ void daE_VA_c::executeDemoOpWait() {
         mDrawRopes = true;
     case 1:
         for (int i = 0; i < 190; i++) {
-            if (!daPy_getPlayerActorClass()->i_checkNowWolf()) {
+            if (!daPy_getPlayerActorClass()->checkNowWolf()) {
                 mLineSphs[i].OffTgShield();
             } else {
                 mLineSphs[i].OnTgShield();
@@ -1590,9 +1576,9 @@ void daE_VA_c::executeDemoOp() {
 
     switch (mMode) {
     case 0:
-        if (!eventInfo.i_checkCommandDemoAccrpt()) {
+        if (!eventInfo.checkCommandDemoAccrpt()) {
             fopAcM_orderPotentialEvent(this, 2, 0xFFFF, 0);
-            eventInfo.i_onCondition(2);
+            eventInfo.onCondition(2);
             return;
         }
 
@@ -1729,7 +1715,7 @@ void daE_VA_c::executeDemoOp() {
             mWeponEfMode = 1;
             mDemoModeTimer = 130;
 
-            if (!player->i_checkNowWolf()) {
+            if (!player->checkNowWolf()) {
                 player->changeDemoMode(0x17, 0, 0, 0);
             }
 
@@ -1900,7 +1886,6 @@ void daE_VA_c::executeClearWait() {
 }
 
 /* 807C7640-807C783C 005140 01FC+00 1/1 0/0 0/0 .text            executeClearChase__8daE_VA_cFv */
-// NONMATCHING load order
 void daE_VA_c::executeClearChase() {
     cLib_addCalc(&current.pos.y, 0.0f, 0.1f, 10.0f, 1.0f);
 
@@ -1926,7 +1911,7 @@ void daE_VA_c::executeClearChase() {
             }
         }
 
-        if (speedF != 0.0f) {
+        if (speedF) {
             if (!checkBck(ANM_INVI_WALK_e)) {
                 setBck(ANM_INVI_WALK_e, J3DFrameCtrl::EMode_LOOP, 10.0f, 1.0f);
             }
@@ -2355,9 +2340,9 @@ void daE_VA_c::executeOpaciWait() {
         Z2GetAudioMgr()->changeSubBgmStatus(3);
         break;
     case 10:
-        if (!eventInfo.i_checkCommandDemoAccrpt()) {
+        if (!eventInfo.checkCommandDemoAccrpt()) {
             fopAcM_orderPotentialEvent(this, 2, 0xFFFF, 0);
-            eventInfo.i_onCondition(2);
+            eventInfo.onCondition(2);
         } else {
             mAlphaType = 2;
             field_0x1380 = 30;
@@ -2681,7 +2666,7 @@ void daE_VA_c::executeOpaciChase() {
         field_0x1388 = 1;
         mSound.startCreatureVoiceLevel(Z2SE_EN_VA_V_ROTATE, -1);
 
-        if (mDownTimer == 0 && !player->i_checkNowWolf()) {
+        if (mDownTimer == 0 && !player->checkNowWolf()) {
             mBodyCyls[0].OnTgSetBit();
             mBodyCyls[1].OnTgSetBit();
         }
@@ -2747,7 +2732,7 @@ void daE_VA_c::executeOpaciChase() {
     case 12:
         mSound.startCreatureVoiceLevel(Z2SE_EN_VA_V_ROTATE, -1);
 
-        if (!player->i_checkNowWolf()) {
+        if (!player->checkNowWolf()) {
             mBodyCyls[0].OnTgSetBit();
             mBodyCyls[1].OnTgSetBit();
         }
@@ -2767,7 +2752,7 @@ void daE_VA_c::executeOpaciChase() {
     case 13:
         mSound.startCreatureVoiceLevel(Z2SE_EN_VA_V_ROTATE, -1);
 
-        if (!player->i_checkNowWolf()) {
+        if (!player->checkNowWolf()) {
             mBodyCyls[0].OnTgSetBit();
             mBodyCyls[1].OnTgSetBit();
         }
@@ -3087,9 +3072,9 @@ void daE_VA_c::executeOpaciDeath() {
 
     switch (mMode) {
     case 0:
-        if (!eventInfo.i_checkCommandDemoAccrpt()) {
+        if (!eventInfo.checkCommandDemoAccrpt()) {
             fopAcM_orderPotentialEvent(this, 2, 0xFFFF, 0);
-            eventInfo.i_onCondition(2);
+            eventInfo.onCondition(2);
             return;
         }
 
@@ -3817,10 +3802,9 @@ static int daE_VA_Delete(daE_VA_c* i_this) {
 }
 
 /* 807CD048-807CD600 00AB48 05B8+00 1/1 0/0 0/0 .text            CreateHeap__8daE_VA_cFv */
-// NONMATCHING weird data issue / reg alloc (probably related)
 int daE_VA_c::CreateHeap() {
     J3DModelData* modelData = (J3DModelData*)dComIfG_getObjectRes("E_VA", 0x33);
-    JUT_ASSERT(modelData != 0);
+    JUT_ASSERT(0, modelData != 0);
 
     mpMorf = new mDoExt_McaMorfSO(modelData, NULL, NULL,
                                   (J3DAnmTransform*)dComIfG_getObjectRes("E_VA", 15), 0, 1.0f, 0,
@@ -3843,7 +3827,7 @@ int daE_VA_c::CreateHeap() {
     }
 
     modelData = (J3DModelData*)dComIfG_getObjectRes("E_VA", 0x30);
-    JUT_ASSERT(modelData != 0);
+    JUT_ASSERT(0, modelData != 0);
 
     mpWeaponModel = mDoExt_J3DModel__create(modelData, 0, 0x11000084);
     if (mpWeaponModel == NULL) {
@@ -3863,7 +3847,7 @@ int daE_VA_c::CreateHeap() {
     }
 
     modelData = (J3DModelData*)dComIfG_getObjectRes("E_VA", 0x37);
-    JUT_ASSERT(modelData != 0);
+    JUT_ASSERT(0, modelData != 0);
 
     mpEndEfMorf = new mDoExt_McaMorfSO(modelData, NULL, NULL,
                                        (J3DAnmTransform*)dComIfG_getObjectRes("E_VA", 7), 0, 1.0f,
@@ -3898,9 +3882,8 @@ int daE_VA_c::CreateHeap() {
     }
 
     f32* size_p = field_0x139c.getSize(0);
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++, size_p++) {
         *size_p = 5.0f;
-        size_p++;
     }
 
     if (!mRope.init(11, 10, (ResTIMG*)dComIfG_getObjectRes("E_VA", 0x3E), 1)) {
@@ -3910,15 +3893,12 @@ int daE_VA_c::CreateHeap() {
     for (int i = 0; i < 11; i++) {
         f32* size_p = mRope.getSize(i);
 
-        for (int j = 0; j < 10; j++) {
-            *size_p = 5.0f;
-            size_p++;
+        for (int j = 0; j < 10; ++j, size_p++) {
+            *size_p = 2.0f;
         }
     }
 
     for (int i = 0; i < 40; i++) {
-        J3DModelData* modelData;
-
         switch (va_tag_set_size[i]) {
         case 0:
             modelData = (J3DModelData*)dComIfG_getObjectRes("E_VA", 0x34);
@@ -3934,7 +3914,7 @@ int daE_VA_c::CreateHeap() {
             break;
         }
 
-        JUT_ASSERT(modelData != 0);
+        JUT_ASSERT(0, modelData != 0);
         mpCardModels[i] = mDoExt_J3DModel__create(modelData, 0, 0x11000084);
     }
 

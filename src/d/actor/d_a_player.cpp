@@ -460,10 +460,6 @@ BOOL daPy_py_c::checkWoodShieldEquip() {
     return equipShield == fpcNm_ITEM_WOOD_SHIELD || equipShield == fpcNm_ITEM_SHIELD;
 }
 
-BOOL daPy_py_c::checkNowWolf() {
-    return dComIfGp_getLinkPlayer()->checkWolf();
-}
-
 /* 8015F3FC-8015F424 159D3C 0028+00 0/0 4/4 3/3 .text            getAttentionOffsetY__9daPy_py_cFv
  */
 f32 daPy_py_c::getAttentionOffsetY() {
@@ -526,10 +522,6 @@ bool daPy_py_c::wolfGrabSubjectNoDraw(fopAc_ac_c* i_actor) {
     return checkNowWolf() && linkGrabSubjectNoDraw(i_actor);
 }
 
-u32 daPy_py_c::getLastSceneMode() {
-    return dComIfGs_getLastSceneMode() & 0xF;
-}
-
 /* 8015F660-8015F698 159FA0 0038+00 2/2 1/1 1/1 .text            checkRoomRestartStart__9daPy_py_cFv
  */
 bool daPy_py_c::checkRoomRestartStart() {
@@ -545,7 +537,7 @@ bool daPy_py_c::checkRoomRestartStart() {
 u32 daPy_py_c::checkCarryStartLightBallA() {
     if (checkRoomRestartStart() || !dComIfGp_getStage() ||
         !dComIfGp_getStage()->getStagInfo() ||
-        i_dStage_stagInfo_GetSaveTbl(dComIfGp_getStage()->getStagInfo()) != 0x17)
+        dStage_stagInfo_GetSaveTbl(dComIfGp_getStage()->getStagInfo()) != 0x17)
     {
         return FALSE;
     }
@@ -557,7 +549,7 @@ u32 daPy_py_c::checkCarryStartLightBallA() {
 u32 daPy_py_c::checkCarryStartLightBallB() {
     if (checkRoomRestartStart() || !dComIfGp_getStage() ||
         !dComIfGp_getStage()->getStagInfo() ||
-        i_dStage_stagInfo_GetSaveTbl(dComIfGp_getStage()->getStagInfo()) != 0x17)
+        dStage_stagInfo_GetSaveTbl(dComIfGp_getStage()->getStagInfo()) != 0x17)
     {
         return FALSE;
     }
@@ -595,7 +587,7 @@ bool daPy_py_c::checkBoomerangCharge() {
 }
 
 /* 8015F8C8-8015F8D0 15A208 0008+00 0/0 0/0 1/1 .text checkBoomerangChargeTime__9daPy_py_cFv */
-int daPy_py_c::checkBoomerangChargeTime() {
+u8 daPy_py_c::checkBoomerangChargeTime() {
     return 0;
 }
 

@@ -7,6 +7,21 @@ class dBgS_Acch;
 class dKy_tevstr_c;
 class JPABaseEmitter;
 
+/**
+ * @brief Particle effect management class for center-based effects
+ * 
+ * This class handles particle effects, particularly those related to water interactions.
+ * It manages emitters, water offsets, and ripple effects with a center-based configuration.
+ * 
+ * @details The class maintains:
+ * - Center-based particle emitters
+ * - Water and ripple offset values
+ * - Effect type information
+ * - Background collision checking capabilities
+ * 
+ * @note This serves as the base class for dPaPoT_c and dPaPoF_c which extend the 
+ * functionality to handle two and four particle emitters respectively.
+ */
 class dPaPo_c {
 public:
     /* 80050C9C */ void init(dBgS_Acch*, f32, f32);
@@ -55,6 +70,13 @@ public:
 
     typedef u8 (dPaPoT_c::*effTypeFunc)(int) const;
     typedef JPABaseEmitter* (dPaPoT_c::*emitterFunc)(int, int);
+
+    u8 getTypeTwo(int param_0, int param_1) const {
+        return (this->*m_typeTwoData[param_0])(param_1);
+    }
+    JPABaseEmitter* getEmitterTwo(int param_0, int param_1, int param_2) {
+        return (this->*m_emitterTwoData[param_0])(param_1, param_2);
+    }
 
     static effTypeFunc m_typeTwoData[];
     static emitterFunc m_emitterTwoData[];

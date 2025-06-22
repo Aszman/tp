@@ -5,10 +5,6 @@
 #include "d/d_event_lib.h"
 #include "f_op/f_op_actor_mng.h"
 
-struct fakeLv3Water2Padding {
-    u8 a[8];
-};
-
 /**
  * @ingroup actors-objects
  * @class daLv3Water2_c
@@ -17,7 +13,7 @@ struct fakeLv3Water2Padding {
  * @details Water in the central room (where the boss entrance is). It can be raised twice.
  *
  */
-class daLv3Water2_c : public dBgS_MoveBgActor, public fakeLv3Water2Padding, public dEvLib_callback_c {
+class daLv3Water2_c : public dBgS_MoveBgActor, public request_of_phase_process_class, public dEvLib_callback_c {
 public:
     daLv3Water2_c() : dEvLib_callback_c(this) {}
     ~daLv3Water2_c() {}
@@ -31,7 +27,7 @@ public:
     /* 80C5ACE4 */ void mode_proc_levelCtrl();
     /* 80C5ADA4 */ int Draw();
     /* 80C5AEFC */ int Delete();
-    /* 80C5AF3C */ BOOL eventStart();
+    /* 80C5AF3C */ bool eventStart();
 
 private:
     /* 0x5B8 */ request_of_phase_process_class mPhase;
@@ -95,9 +91,7 @@ struct daLv3Water2_HIO_c : public mDoHIO_entry_c {
     /* 80C5A40C */ daLv3Water2_HIO_c();
     /* 80C5B14C */ ~daLv3Water2_HIO_c() {}
 
-    #ifdef DEBUG
     void genMessage(JORMContext*);
-    #endif
 
     /* 0x04 */ u8 mLevelControlWaitFrames;
 };

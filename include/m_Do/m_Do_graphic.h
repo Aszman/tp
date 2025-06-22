@@ -4,8 +4,6 @@
 #include "JSystem/JFramework/JFWDisplay.h"
 #include "dolphin/mtx.h"
 
-class JUTFader;
-
 int mDoGph_Create();
 void mDoGph_drawFilterQuad(s8 param_0, s8 param_1);
 
@@ -61,7 +59,7 @@ public:
 
     static int startFadeOut(int param_0) { return JFWDisplay::getManager()->startFadeOut(param_0); }
     static int startFadeIn(int param_0) { return JFWDisplay::getManager()->startFadeIn(param_0); }
-    static void setFadeColor(JUtility::TColor color) { mFader->mColor.set(color); }
+    static void setFadeColor(JUtility::TColor& color) { mFader->setColor(color); }
     static void setClearColor(JUtility::TColor color) { JFWDisplay::getManager()->setClearColor(color); }
     static void setBackColor(GXColor& color) { mBackColor = color; }
     static void endFrame() { JFWDisplay::getManager()->endFrame(); }
@@ -105,6 +103,9 @@ public:
     static f32 getScale() { return 1.0f; }
     static void setWideZoomLightProjection(Mtx m) {}
     static void setFrameRate(u16 i_rate) { JFWDisplay::getManager()->setFrameRate(i_rate); }
+
+    // NONMATCHING - Need to define all mDoGph_gInf_c shieldD members
+    static u8 isWide() { return false; }
 
     static GXTexObj mFrameBufferTexObj;
     static GXTexObj mZbufferTexObj;

@@ -630,7 +630,7 @@ void daNpc_zrZ_c::setParam() {
     u32 attn_flags = 10;
     selectAction();
 
-    if (!mTwilight && daPy_py_c::i_checkNowWolf()) {
+    if (!mTwilight && daPy_py_c::checkNowWolf()) {
         attn_flags = 0;
     }
 
@@ -926,7 +926,7 @@ void daNpc_zrZ_c::setExpression(int i_expression, f32 i_morf) {
 }
 
 /* 80B95F3C-80B9612C 00225C 01F0+00 1/0 0/0 0/0 .text            setMotionAnm__11daNpc_zrZ_cFif */
-bool daNpc_zrZ_c::setMotionAnm(int i_idx, f32 i_morf) {
+void daNpc_zrZ_c::setMotionAnm(int i_idx, f32 i_morf) {
     J3DAnmTransformKey* bck_anm = NULL;
     J3DAnmTextureSRTKey* btk_anm = NULL;
     int attr = J3DFrameCtrl::EMode_LOOP;

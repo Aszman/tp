@@ -9,6 +9,7 @@
 #include "m_Do/m_Do_lib.h"
 #include "dol2asm.h"
 
+#if VERSION == VERSION_GCN_USA
 // This is a HACK to get d_insect data at correct address due to
 // issues with the d_a_obj_item vtable. TODO: fix daItem_c vtable
 #pragma push
@@ -24,6 +25,7 @@ SECTION_DATA extern void* __vt__8daItem_c__HACK[] = {
     NULL,
 };
 #pragma pop
+#endif
 
 /* 8015E010-8015E078 158950 0068+00 0/0 0/0 13/13 .text            __ct__9dInsect_cFv */
 dInsect_c::dInsect_c() {
@@ -45,7 +47,7 @@ void dInsect_c::Insect_GetDemoMain() {
             cLib_offBit<u32>(attention_info.flags, 0x10);
             fopAcM_cancelCarryNow(this);
             fopAcM_orderItemEvent(this, 0, 0);
-            eventInfo.i_onCondition(dEvtCnd_CANGETITEM_e);
+            eventInfo.onCondition(dEvtCnd_CANGETITEM_e);
 
             m_itemId = fopAcM_createItemForTrBoxDemo(&current.pos, m_itemNo, -1,
                                                      fopAcM_GetRoomNo(this), NULL, NULL);
@@ -68,7 +70,7 @@ void dInsect_c::Insect_GetDemoMain() {
             m_mode = 2;
         } else {
             fopAcM_orderItemEvent(this, 0, 0);
-            eventInfo.i_onCondition(dEvtCnd_CANGETITEM_e);
+            eventInfo.onCondition(dEvtCnd_CANGETITEM_e);
         }
         break;
     case 2:

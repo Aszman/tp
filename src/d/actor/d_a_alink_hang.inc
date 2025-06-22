@@ -72,6 +72,7 @@ BOOL daAlink_c::hangMoveBgCheck(s16 param_0, cXyz* param_1) {
 
     cXyz sp9C;
     for (int i = 0; i < 3; i++) {
+        static f32 const underOffsetY[3] = {15.0f, 90.0f, 150.0f};
         sp90.y = sp84.y = var_f31 - underOffsetY[i];
 
         if (commonLineCheck(&sp84, &sp90)) {
@@ -83,7 +84,7 @@ BOOL daAlink_c::hangMoveBgCheck(s16 param_0, cXyz* param_1) {
                         return true;
                     }
 
-                    sp9C = mLinkLinChk.i_GetCross() - sp90;
+                    sp9C = mLinkLinChk.GetCross() - sp90;
                     if (sp9C.abs2XZ() > param_1->abs2XZ()) {
                         *param_1 = sp9C;
                         rt = true;
@@ -169,7 +170,7 @@ bool daAlink_c::checkHangFootWall() {
         cM3dGPla sp40;
         dComIfG_Bgsp().GetTriPla(mLinkLinChk, &sp40);
 
-        if (fabsf(sp40.mNormal.y) <= 0.005f) {
+        if (fabsf(sp40.mNormal.y) <= 0.05f) {
             onNoResetFlg2(FLG2_UNK_2000);
             return true;
         }
@@ -664,7 +665,7 @@ int daAlink_c::procHangMove() {
                             if (abs(temp_r25) < 100) {
                                 field_0x308c = 0;
                             } else {
-                                cXyz spC8(mLinkLinChk.i_GetCross());
+                                cXyz spC8(mLinkLinChk.GetCross());
                                 spC8.x -= spA4.mNormal.x * 1.5f;
                                 spC8.y += 25.0f;
                                 spC8.z -= spA4.mNormal.z * 1.5f;
@@ -1743,7 +1744,7 @@ void daAlink_c::setClimbShapeOffset() {
     sp60.z += var_f30;
 
     if (commonLineCheck(&sp54, &sp60) && (!checkModeFlg(0x10000) || checkClimbCode(mLinkLinChk))) {
-        sp78 = mLinkLinChk.i_GetCross();
+        sp78 = mLinkLinChk.GetCross();
     } else {
         field_0x308c = 0;
         return;
@@ -1757,7 +1758,7 @@ void daAlink_c::setClimbShapeOffset() {
     if (!commonLineCheck(&sp54, &sp60) || (checkModeFlg(0x10000) && !checkClimbCode(mLinkLinChk))) {
         field_0x308c = 0;
     } else {
-        sp78 -= mLinkLinChk.i_GetCross();
+        sp78 -= mLinkLinChk.GetCross();
         cLib_addCalcAngleS(&field_0x308c, (s16)((sp78.atan2sX_Z() - 0x4000) - shape_angle.y), 5,
                            2000, 400);
     }
@@ -1928,8 +1929,8 @@ int daAlink_c::setMoveBGClimbCorrect() {
     s16 temp_r28 = shape_angle.y;
     shape_angle.y = temp_r29 + 0x8000;
 
-    current.pos.x = mLinkLinChk.i_GetCross().x;
-    current.pos.z = mLinkLinChk.i_GetCross().z;
+    current.pos.x = mLinkLinChk.GetCross().x;
+    current.pos.z = mLinkLinChk.GetCross().z;
     current.angle.y += (s16)(shape_angle.y - temp_r28);
     field_0x308c += (s16)(temp_r28 - shape_angle.y);
 
@@ -1948,7 +1949,7 @@ int daAlink_c::checkBgCorrectClimbMove(cXyz* i_startPos, cXyz* i_endPos) {
         if (cLib_distanceAngleS(tri_plane.mNormal.atan2sX_Z(), shape_angle.y) < 0x549F ||
             (checkModeFlg(0x10000) && !checkClimbCode(mLinkLinChk)))
         {
-            current.pos += mLinkLinChk.i_GetCross() - *i_endPos;
+            current.pos += mLinkLinChk.GetCross() - *i_endPos;
             return 1;
         }
     }
@@ -2541,8 +2542,8 @@ int daAlink_c::procClimbWait() {
                 } else {
                     daPy_addCalcShort(&field_0x30a0, 0, 3, 0x800, 0x100);
                     daPy_addCalcShort(&field_0x30a2, 0, 3, 0x800, 0x100);
-                    field_0x33f0 = field_0x30a2 * 0.0001627604f;
-                    field_0x33f4 = -field_0x30a0 * -0.0001627604f;
+                    field_0x33f0 = field_0x30a2 * 0.00016276042f;
+                    field_0x33f4 = -field_0x30a0 * -0.00016276042f;
                 }
             }
         } else if (fabsf(frameCtrl->getRate()) > 0.01f) {
@@ -2632,6 +2633,14 @@ void daAlink_c::setRoofHangHandOnSE(cBgS_PolyInfo* unused) {
         frame_ctrl->checkPass(field_0x347c);
     }
 }
+
+/* 80452FA8-80452FB0 0015A8 0008+00 1/1 0/0 0/0 .sdata2          offsetAngle$25945 */
+static const s16 offsetAngle[] = {
+    0x0000,
+    0x8000,
+    0x4000,
+    0xC000,
+};
 
 /* 80100668-80100770 0FAFA8 0108+00 3/3 0/0 0/0 .text            checkRoofHangMovePos__9daAlink_cFv
  */
@@ -2887,7 +2896,7 @@ int daAlink_c::procRoofHangFrontMove() {
 
         mNormalSpeed = getAnmSpeedStickRate(daAlinkHIO_roofHang_c0::m.field_0x30,
                                             daAlinkHIO_roofHang_c0::m.field_0x34) *
-                       cM_fsin((frame * M_PI) * 0.08333334f);
+                       cM_fsin((frame * M_PI) * 0.083333336f);
         if (mNormalSpeed < 0.0f) {
             mNormalSpeed = 0.0f;
         }
@@ -2911,8 +2920,8 @@ int daAlink_c::procRoofHangFrontMove() {
                 dComIfG_Bgsp().GetTriPla(mLinkLinChk, &sp70);
 
                 if (cLib_distanceAngleS(sp70.mNormal.atan2sX_Z(), shape_angle.y) > 0x6000) {
-                    current.pos.x = sp70.mNormal.x * 15.0f + mLinkLinChk.i_GetCross().x;
-                    current.pos.z = sp70.mNormal.z * 15.0f + mLinkLinChk.i_GetCross().z;
+                    current.pos.x = sp70.mNormal.x * 15.0f + mLinkLinChk.GetCross().x;
+                    current.pos.z = sp70.mNormal.z * 15.0f + mLinkLinChk.GetCross().z;
                     return procFallInit(1, daAlinkHIO_autoJump_c0::m.mFallInterpolation);
                 }
             }

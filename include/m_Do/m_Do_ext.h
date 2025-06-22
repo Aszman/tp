@@ -146,6 +146,9 @@ public:
     /* 8000D990 */ void changeBckOnly(J3DAnmTransform* i_bck);
     /* 8000D9CC */ void entry(J3DModelData* i_modelData, f32 i_frame);
     /* 8000D9E8 */ void entryJoint(J3DModelData* i_modelData, u16 i_jntNo, f32 i_frame);
+    inline void entryJoint(J3DModelData* i_modelData, u16 i_jntNo) {
+        entryJoint(i_modelData, i_jntNo, getFrame());
+    }
 
     void entry(J3DModelData* i_modelData) { entry(i_modelData, getFrame()); }
 
@@ -334,8 +337,11 @@ public:
     J3DModel* getModel() { return mpModel; }
     void offMorfNone() { mMorfNone = false; }
     void onMorfNone() { mMorfNone = true; }
+    inline void setTranslateScale(cXyz& i_scale) { mTranslateScale = i_scale; }
     J3DTransformInfo* getOldTransInfo() { return mpTransformInfo; }
     Quaternion* getOldQuaternion() { return mpQuat; }
+    void offTranslate() { mTranslate = true; }
+    void setTranslateScale(const cXyz& scale) { mTranslateScale = scale; }
 
 private:
     /* 0x38 */ mDoExt_McaMorfCallBack1_c* mpCallback1;
@@ -834,6 +840,11 @@ void mDoExt_setupStageTexture(J3DModelData* i_modelData);
 OSThread* mDoExt_GetCurrentRunningThread();
 void mDoExt_setupShareTexture(J3DModelData* i_modelData, J3DModelData* i_shareModelData);
 void mDoExt_btkAnmRemove(J3DModelData* i_modelData);
+
+#if VERSION == VERSION_SHIELD_DEBUG
+s32 mDoExt_getSafeZeldaHeapSize();
+void mDoExt_addSafeZeldaHeapSize(s32);
+#endif
 
 struct JUTFont;
 JUTFont* mDoExt_getMesgFont();

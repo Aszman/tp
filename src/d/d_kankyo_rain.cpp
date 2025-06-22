@@ -4237,7 +4237,7 @@ void dKyr_drawStar(Mtx drawMtx, u8** tex) {
                 temp_f29 *= temp_f29 * temp_f29;
                 var_f28 += 1.0f + (3.0f * temp_f29);
                 if (var_f28 > 200.0f) {
-                    var_f28 = 20.0f * (i / 2800.0f);
+                    var_f28 = 20.0f * (i / 1200.0f);
                 }
 
                 static const GXColor star_col[] = {
@@ -5285,7 +5285,7 @@ void dKyr_odour_move() {
 }
 
 /* 8006BE0C-8006C790 06674C 0984+00 0/0 1/1 0/0 .text            dKyr_odour_draw__FPA4_fPPUc */
-// NONMATCHING - regalloc and out of order instruction
+// NONMATCHING - regalloc
 void dKyr_odour_draw(Mtx drawMtx, u8** tex) {
     dScnKy_env_light_c* envlight = dKy_getEnvlight();
     dKankyo_odour_Packet* odour_packet = envlight->mpOdourPacket;

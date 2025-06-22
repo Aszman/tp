@@ -679,7 +679,7 @@ bool daNpcThe_c::setExpressionBtp(int i_idx) {
 }
 
 /* 80AF8564-80AF8744 000F84 01E0+00 2/0 0/0 0/0 .text            setMotionAnm__10daNpcThe_cFif */
-bool daNpcThe_c::setMotionAnm(int i_idx, f32 i_morf) {
+void daNpcThe_c::setMotionAnm(int i_idx, f32 i_morf) {
     J3DAnmTransformKey* anm_trans = NULL;
     J3DAnmTextureSRTKey* anm_tex = NULL;
     int attr = J3DFrameCtrl::EMode_LOOP;
@@ -1388,7 +1388,7 @@ BOOL daNpcThe_c::main() {
             eventInfo.setArchiveName(l_resNames[l_evtGetParamList[mOrderEvtNo]]);
         }
         if (!strcmp(dComIfGp_getStartStageName(), "R_SP116")) {
-            eventInfo.i_onCondition(0x20);
+            eventInfo.onCondition(0x20);
         }
         orderEvent(field_0xe1c, l_evtNames[mOrderEvtNo], 0xffff, 0x28, 0xff, 1);
     }
@@ -1425,7 +1425,6 @@ void daNpcThe_c::setExpressionTalkAfter() {
 }
 
 /* 80AFA6CC-80AFADEC 0030EC 0720+00 1/1 0/0 0/0 .text            doEvent__10daNpcThe_cFv */
-// NONMATCHING regalloc and mr ordering
 BOOL daNpcThe_c::doEvent() {
     BOOL ret = false;
     if (dComIfGp_event_runCheck() != false) {
@@ -1478,7 +1477,7 @@ BOOL daNpcThe_c::doEvent() {
             }
             ret = true;
         } else {
-            int staff_id = event_manager.getMyStaffId(l_myName, this, -1);
+            s32 staff_id = event_manager.getMyStaffId(l_myName, this, -1);
             if (staff_id != -1) {
                 mStaffID = staff_id;
                 int act_idx = event_manager.getMyActIdx(staff_id, mEvtCutNameList,
@@ -1494,7 +1493,7 @@ BOOL daNpcThe_c::doEvent() {
                 }
                 ret = true;
             }
-            if (eventInfo.i_checkCommandDemoAccrpt() && mEventIdx != -1
+            if (eventInfo.checkCommandDemoAccrpt() && mEventIdx != -1
                                                      && event_manager.endCheck(mEventIdx)) {
                 dComIfGp_event_reset();
                 mOrderEvtNo = 0;

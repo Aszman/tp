@@ -12,7 +12,7 @@ void JMAVECScaleAdd(register const Vec* vec1, register const Vec* vec2, register
                     register f32 scale);
 
 inline int JMAAbs(int value) {
-    return (value >> 0x1f ^ value) - (value >> 0x1f);
+    return __abs(value);
 }
 
 inline f32 JMAFastReciprocal(f32 value) {
@@ -212,22 +212,52 @@ namespace JMathInlineVEC {
     #endif
     }
 
-    inline f32 C_VECSquareMag(const Vec* v) {
+    inline f32 C_VECSquareMag(register const Vec* v) {
         register f32 x_y;
         register f32 z;
         register f32 res;
-        register const f32* src = &v->x;
     #ifdef __MWERKS__
         asm {
-            psq_l   x_y, 0(src), 0, 0
+            psq_l   x_y, 0(v), 0, 0
             ps_mul  x_y, x_y, x_y
-            lfs     z,   8(src)
+            lfs     z,   8(v)
             ps_madd res, z, z, x_y
             ps_sum0 res, res, x_y, x_y
         }
     #endif
         return res;
     }
+
+    inline f32 C_VECDotProduct(register const Vec *a, register const Vec *b) {
+        register f32 res;
+        register f32 thisyz;
+        register f32 otheryz;
+        register f32 otherxy;
+        register f32 thisxy;
+#ifdef __MWERKS__
+        asm {
+            psq_l thisyz, 4(a), 0, 0
+            psq_l otheryz, 4(b), 0, 0
+            ps_mul thisyz, thisyz, otheryz
+            psq_l thisxy, 0(a), 0, 0
+            psq_l otherxy, 0(b), 0, 0
+            ps_madd otheryz, thisxy, otherxy, thisyz
+            ps_sum0 res, otheryz, thisyz, thisyz
+        };
+#endif
+        return res;
+    }
 };
+
+template<typename T>
+inline T JMAMax(T param_0, T param_1) {
+    T ret;
+    if (param_0 > param_1) {
+        ret = param_0;
+    } else {
+        ret = param_1;
+    }
+    return ret;
+}
 
 #endif /* JMATH_H */

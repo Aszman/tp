@@ -14,11 +14,8 @@
  * @details
  *
  */
-struct fakeTuraraPadding {
-    u8 a[8];
-};
 
-class daTurara_c : public dBgS_MoveBgActor, public fakeTuraraPadding, public dEvLib_callback_c {
+class daTurara_c : public dBgS_MoveBgActor, public request_of_phase_process_class, public dEvLib_callback_c {
 public:
     daTurara_c() : dEvLib_callback_c(this) {}
     /* 80B9E710 */ ~daTurara_c() {}
@@ -31,7 +28,7 @@ public:
     /* 80B9D548 */ void move();
     /* 80B9D72C */ void init_modeWait();
     /* 80B9D738 */ void modeWait();
-    /* 80B9D998 */ BOOL eventStart();
+    /* 80B9D998 */ bool eventStart();
     /* 80B9D9BC */ void init_modeDropInit();
     /* 80B9DA00 */ void modeDropInit();
     /* 80B9DA44 */ void init_modeDrop();
@@ -91,6 +88,8 @@ class daTurara_HIO_c : public fOpAcm_HIO_entry_c {
 public:
     /* 80B9CB8C */ daTurara_HIO_c();
     /* 80B9E5B4 */ virtual ~daTurara_HIO_c() {}
+
+    void genMessage(JORMContext*);
 
     /* 0x04 */ f32 field_0x04;
     /* 0x08 */ f32 mGravity;
