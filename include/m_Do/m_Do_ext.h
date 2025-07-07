@@ -567,7 +567,7 @@ public:
 private:
     /* 0x08 */ GXColor field_0x8;
     /* 0x0C */ dKy_tevstr_c* field_0xc;
-    /* 0x10 */ u16 field_0x10;
+    /* 0x10 */ u16 m_lines;
     /* 0x12 */ u16 field_0x12;
     /* 0x14 */ u16 field_0x14;
     /* 0x16 */ u8 field_0x16;

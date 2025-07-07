@@ -2126,7 +2126,7 @@ int mDoExt_3Dline_c::init(u16 param_0, int param_1, int param_2) {
 /* 800125E0-800126BC 00CF20 00DC+00 0/0 0/0 12/12 .text            init__19mDoExt_3DlineMat0_cFUsUsi
  */
 int mDoExt_3DlineMat0_c::init(u16 param_0, u16 param_1, int param_2) {
-    field_0x10 = param_0;
+    m_lines = param_0;
     field_0x12 = param_1;
 
     field_0x18 = new mDoExt_3Dline_c[param_0];
@@ -2202,7 +2202,7 @@ void mDoExt_3DlineMat0_c::draw() {
     mDoExt_3Dline_c* var_r28 = field_0x18;
     int var_r26 = (field_0x14 & 0x7FFF) << 1;
 
-    for (int i = 0; i < field_0x10; i++) {
+    for (int i = 0; i < m_lines; i++) {
         GXSetArray(GX_VA_POS, var_r28[field_0x16].field_0x8, sizeof(cXyz));
         GXSetArray(GX_VA_NRM, var_r28[field_0x16].field_0x10, 3);
 
@@ -2227,7 +2227,81 @@ void mDoExt_3DlineMat0_c::draw() {
  * update__19mDoExt_3DlineMat0_cFifR8_GXColorUsP12dKy_tevstr_c  */
 void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16 param_3,
                                      dKy_tevstr_c* param_4) {
-    // NONMATCHING
+    field_0x8 = param_2;
+    field_0xc = param_4;
+    if (param_0 < 0) {
+        field_0x14 = field_0x12;
+    } else if (field_0x12 > param_0) {
+        field_0x14 = param_0;
+    } else {
+        field_0x14 = field_0x12;
+    }
+    
+    view_class* view = dComIfGd_getView();
+    mDoExt_3Dline_c* lines = field_0x18;
+    f32 f = param_3 != 0 ? param_1 / param_3 : 0.0f;
+    for (u16 i = 0; i < m_lines; i++) {\
+        cXyz* c1 = lines->field_0x0;
+        cXyz* c2 = &lines->field_0x8[field_0x16];
+        u8* u1 = &lines->field_0x10[field_0x16];
+        cXyz dist = c1[1] - c1[0];
+        cXyz dist2 = c1[0] - view->lookat.eye;
+        dist = dist.outprod(dist2);
+        dist.normalizeZP();
+        u1[0] = dist.x * 64.0f;
+        u1[1] = dist.y * 64.0f;
+        u1[2] = dist.z * 64.0f;
+        u1[3] = -u1[0];
+        u1[4] = -u1[1];
+        u1[5] = -u1[2];
+
+        dist *= param_1;
+        c2[0] = c1[0] + dist; 
+        c2[1] = c1[0] - dist;
+        cXyz val1 = c1[1] + dist;
+        cXyz val2 = c1[1] - dist;
+        u8* u2 = u1 + 3;
+        cXyz* temp = c2;
+        f32 scale = param_1;
+        for(u16 j = field_0x14 - 2; j > 0; j--) {
+
+            if (j < param_3) {
+                scale -= f;
+            }
+
+            dist = c1[2] - c1[1];
+            dist2 = c1[1] - view->lookat.eye;
+            dist = dist.outprod(dist2);
+            dist.normalize();
+            u1[6] = dist.x * 64.0f;
+            u1[7] = dist.y * 64.0f;
+            u1[8] = dist.z * 64.0f;
+            u1[9] = -dist.x;
+            u1[10] = -dist.y;
+            u1[11] = -dist.z;
+            dist *= scale;
+            val1 += c1[1] + dist;
+            val2 += c1[1] - dist;
+            *temp = val1 * 0.5f;
+            *c2 = val2 * 0.5f;
+            
+
+
+
+            
+
+            
+        
+        }
+
+
+
+
+        DCStoreRangeNoSync(c2, field_0x14*24);
+        DCStoreRangeNoSync(u1, field_0x14*6);
+        lines = lines + 1;
+    }
+
 }
 
 /* 80012E3C-80013360 00D77C 0524+00 0/0 0/0 9/9 .text
@@ -2255,7 +2329,7 @@ void mDoExt_3DlineMat0_c::update(int param_0, GXColor& param_1, dKy_tevstr_c* pa
     cXyz sp11C;
     cXyz sp110;
 
-    for (int i = 0; i < field_0x10; i++) {
+    for (int i = 0; i < m_lines; i++) {
         cXyz* pos_p = sp30->field_0x0;
         f32* size_p = sp30->field_0x4;
         JUT_ASSERT(0x1545, size_p != 0);
