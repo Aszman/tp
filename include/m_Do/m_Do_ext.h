@@ -15,6 +15,12 @@ class JKRSolidHeap;
 struct ResTIMG;
 class Z2Creature;
 
+struct nXyz {
+    s8 x;
+    s8 y;
+    s8 z;
+};
+
 class mDoExt_baseAnm {
 public:
     mDoExt_baseAnm() {}
@@ -497,10 +503,10 @@ public:
     /* 0x04 */ f32* field_0x4;
     /* 0x08 */ cXyz* field_0x8;
     /* 0x0C */ cXyz* field_0xc;
-    /* 0x10 */ u8* field_0x10;
+    /* 0x10 */ nXyz* field_0x10;
     /* 0x14 */ void* field_0x14;
-    /* 0x18 */ f32* field_0x18;
-    /* 0x1C */ f32* field_0x1c;
+    /* 0x18 */ f64* field_0x18;
+    /* 0x1C */ f64* field_0x1c;
 };
 
 class mDoExt_3DlineMat_c {

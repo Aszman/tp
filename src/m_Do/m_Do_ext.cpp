@@ -2073,7 +2073,7 @@ int mDoExt_3Dline_c::init(u16 param_0, int param_1, int param_2) {
         field_0x4 = NULL;
     }
 
-    int sp20 = param_0 * 2;
+    s32 sp20 = param_0 * 2;
 
     field_0x8 = new cXyz[sp20];
     if (field_0x8 == NULL) {
@@ -2085,33 +2085,33 @@ int mDoExt_3Dline_c::init(u16 param_0, int param_1, int param_2) {
         return 0;
     }
 
-    field_0x10 = new u8[param_0 * 3];
+    field_0x10 = new nXyz[sp20];
     if (field_0x10 == NULL) {
         return 0;
     }
 
-    field_0x14 = new u8[param_0 * 3];
+    field_0x14 = new nXyz[sp20];
     if (field_0x14 == NULL) {
         return 0;
     }
 
     if (param_2 != 0) {
-        field_0x18 = new f32[sp20];
+        field_0x18 = new f64[sp20];
         if (field_0x18 == NULL) {
             return 0;
         }
 
-        field_0x1c = new f32[sp20];
+        field_0x1c = new f64[sp20];
         if (field_0x1c == NULL) {
             return 0;
         }
 
-        f32* var_r28 = field_0x18;
-        f32* var_r27 = field_0x1c;
-        for (int i = 0; i < param_0; i++) {
-            var_r28[0] = 0.0f;
+        f32* var_r28 = (f32*)field_0x18;
+        f32* var_r27 = (f32*)field_0x1c;
+        for (s32 i = 0; i < param_0; i++) {
+            var_r28[0] = 0.0;
             var_r27[0] = 0.0f;
-
+            
             var_r28[2] = 1.0f;
             var_r27[2] = 1.0f;
 
@@ -2240,23 +2240,22 @@ void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16
     view_class* view = dComIfGd_getView();
     mDoExt_3Dline_c* lines = field_0x18;
     f32 f = param_3 != 0 ? param_1 / param_3 : 0.0f;
-    u32 g =  field_0x14  * 2;
-    u32 uVar1 = g * 12;
-    u32 uVar2 = g * 3;
+    u32 uVar1 = field_0x14 * 2 * sizeof(cXyz);
+    u32 uVar2 = field_0x14 * 2 * sizeof(nXyz);
     for (s16 i = 0; i < m_lines; i++) {
         cXyz* c1 = lines->field_0x0;
         cXyz* c2 = (&lines->field_0x8)[field_0x16];
-        u8* u1 = (&lines->field_0x10)[field_0x16];
+        nXyz* n1 = (&lines->field_0x10)[field_0x16];
         cXyz dist = c1[1] - c1[0];
         cXyz dist2 = c1[0] - view->lookat.eye;
         dist = dist.outprod(dist2);
         dist.normalizeZP();
-        u1[0] = dist.x * 64.0f;
-        u1[1] = dist.y * 64.0f;
-        u1[2] = dist.z * 64.0f;
-        u1[3] = -u1[0];
-        u1[4] = -u1[1];
-        u1[5] = -u1[2];
+        n1->x = dist.x * 64.0f;
+        n1->y = dist.y * 64.0f;
+        n1->z = dist.z * 64.0f;
+        n1[1].x = -n1->x;
+        n1[2].y = -n1->y;
+        n1[3].z = -n1->z;
 
         dist *= param_1;
         c2[0] = c1[0] + dist; 
@@ -2264,8 +2263,8 @@ void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16
         c1++;
         cXyz val1 = c1[0] + dist;
         cXyz val2 = c1[0] - dist;
-        u8* u2 = u1 + 3;
-        u8* u3 = u1;
+        nXyz* n2 = n1 + 1;
+        nXyz* n3 = n1;
         f32 scale = param_1;
         cXyz* temp = c2;
         cXyz* temp2 = temp + 2;
@@ -2279,14 +2278,14 @@ void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16
             dist2 = c1[0] - view->lookat.eye;
             dist = dist.outprod(dist2);
             dist.normalize();
-            u3[6] = dist.x * 64.0f;
-            u3[7] = dist.y * 64.0f;
-            u3[8] = dist.z * 64.0f;
-            u2[6] = -u3[6];
-            u2[7] = -u3[7];
-            u2[8] = -u3[8];
-            u2 += 6;
-            u3 += 6;
+            n3[2].x = dist.x * 64.0f;
+            n3[2].y = dist.y * 64.0f;
+            n3[2].z = dist.z * 64.0f;
+            n2[2].x = -n3[2].x;
+            n2[2].y = -n3[2].y;
+            n2[2].z = -n3[2].z;
+            n2 += 6;
+            n3 += 6;
             dist *= scale;
             val1 += c1[0] + dist;
             val2 += c1[0] - dist;
@@ -2298,12 +2297,12 @@ void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16
 
             temp = temp2;
         }
-        u2[3] = u3[0];
-        u2[4] = u3[1];
-        u2[5] = u3[2];
-        u2[6] = u3[3];
-        u2[7] = u3[4];
-        u2[8] = u3[5];
+        n2[1].x = n3->x;
+        n2[1].y = n3->y;
+        n2[1].z = n3->z;
+        n2[2].x = n3[1].x;
+        n2[2].y = n3[1].y;
+        n2[2].z = n3[1].z;
         if (param_3 == FALSE) {
             temp2[0] = val1;
             temp[3] = val2;
@@ -2313,7 +2312,7 @@ void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16
         }
 
         DCStoreRangeNoSync(c2, uVar1);
-        DCStoreRangeNoSync(u1, uVar2);
+        DCStoreRangeNoSync(n1, uVar2);
         lines = lines + 1;
     }
 
@@ -2336,95 +2335,102 @@ void mDoExt_3DlineMat0_c::update(int param_0, GXColor& param_1, dKy_tevstr_c* pa
 
     view_class* view_p = dComIfGd_getView();
     mDoExt_3Dline_c* sp30 = field_0x18;
-    int g = field_0x14 * 2;
-    int sp2C = g * 3;
-    int sp28 = g * 12;
+    u32 sp28 = field_0x14 * 2 * sizeof(cXyz);
+    u32 sp2C = field_0x14 * 2 * sizeof(nXyz);
 
-    cXyz sp134;
-    cXyz sp128;
-    cXyz sp11C;
-    cXyz sp110;
-
+    cXyz* pos_p;
+    cXyz* sp26;
+    cXyz* sp20;
+    nXyz* var_r30;
+    nXyz* var_r29;
+    nXyz* sp1C;
+    f32* size_p;
     for (int i = 0; i < m_lines; i++) {
-        cXyz* pos_p = sp30->field_0x0;
-        f32* size_p = sp30->field_0x4;
+        pos_p = sp30->field_0x0;
+        size_p = sp30->field_0x4;
         JUT_ASSERT(0x1545, size_p != 0);
+        
+        sp20 = (&sp30->field_0x8)[field_0x16];
+        sp26 = sp20;
+        sp1C = (&sp30->field_0x10)[field_0x16];
 
-        cXyz* sp20 = *(&sp30->field_0x8 + field_0x16);
-        cXyz* sp24 = sp20;
+        var_r30 = sp1C;
+        var_r29 = var_r30 + 1;
 
-        u8* sp1C = *(&sp30->field_0x10 + field_0x16);
-
-        u8* var_r30 = sp1C;
-        u8* var_r29 = var_r30 + 3;
-
+        cXyz sp134;
+        cXyz sp128;
         sp128 = pos_p[1] - pos_p[0];
         sp134 = pos_p[0] - view_p->lookat.eye;
         sp128 = sp128.outprod(sp134);
         sp128.normalizeZP();
 
-        var_r30[0] = sp128.x * 64.0f;
-        var_r30[1] = sp128.y * 64.0f;
-        var_r30[2] = sp128.z * 64.0f;
-        var_r29[0] = -sp1C[0];
-        var_r29[1] = -sp1C[1];
-        var_r29[2] = -sp1C[2];
+        var_r30->x = sp128.x * 64.0f;
+        var_r30->y = sp128.y * 64.0f;
+        var_r30->z = sp128.z * 64.0f;
+        var_r29->x = -sp1C->x;
+        var_r29->y = -sp1C->y;
+        var_r29->z = -sp1C->z;
+        
 
         sp128 *= *size_p;
         sp20[0] = pos_p[0] + sp128;
         sp20[1] = pos_p[0] - sp128;
-        
         pos_p++;
-
-        sp11C = pos_p[0] + sp128;
-        sp110 = pos_p[0] - sp128;
-
+        sp26 += 2;
+        size_p++;
+        
+        cXyz sp11C = pos_p[0] + sp128;
+        cXyz sp110 = pos_p[0] - sp128;
+        
         for (int sp10 = field_0x14 - 2; sp10 > 0; sp10--) {
             sp128 = pos_p[1] - pos_p[0];
             sp134 = pos_p[0] - view_p->lookat.eye;
             sp128 = sp128.outprod(sp134);
             sp128.normalizeZP();
 
-            var_r30 += 6;
-            var_r29 += 6;
+            var_r30 += 2;
+            var_r29 += 2;
 
-            var_r30[0] = sp128.x * 64.0f;
-            var_r30[1] = sp128.y * 64.0f;
-            var_r30[2] = sp128.z * 64.0f;
-            var_r29[0] = -sp1C[0];
-            var_r29[1] = -sp1C[1];
-            var_r29[2] = -sp1C[2];
+            var_r30->x = sp128.x * 64.0f;
+            var_r30->y = sp128.y * 64.0f;
+            var_r30->z = sp128.z * 64.0f;
+            var_r29->x = -var_r30->x;
+            var_r29->y = -var_r30->y;
+            var_r29->z = -var_r30->z;
 
             sp128 *= *size_p;
             sp11C += pos_p[0] + sp128;
             sp110 += pos_p[0] - sp128;
-            *sp24 = sp11C * 0.5f;
-            *sp20 = sp110 * 0.5f;
+            sp26[0] = sp11C * 0.5f;
+            sp26[1] = sp110 * 0.5f;
             
             pos_p++;
-
+            sp26 += 2;
+            size_p++;
+            
             sp11C = pos_p[0] + sp128;
             sp110 = pos_p[0] - sp128;
         }
 
-        var_r29 += 3;
+        var_r29 += 1;
 
-        var_r29[0] = var_r30[0];
-        var_r29[1] = var_r30[1];
-        var_r29[2] = var_r30[2];
+        var_r29->x = var_r30->x;
+        var_r29->y = var_r30->y;
+        var_r29->z = var_r30->z;
 
-        var_r30 += 3;
-        var_r29 += 3;
+        var_r30 += 1;
+        var_r29 += 1;
 
-        var_r29[0] = var_r30[0];
-        var_r29[1] = var_r30[1];
-        var_r29[2] = var_r30[2];
+        var_r29->x = var_r30->x;
+        var_r29->y = var_r30->y;
+        var_r29->z = var_r30->z;
 
-        *sp24 = sp11C;
-        *sp20 = sp110;
+        sp26[0] = sp11C;
+        sp26[1] = sp110;
 
-        DCStoreRangeNoSync(sp20, sp2C);
-        DCStoreRangeNoSync(sp1C, sp28);
+        DCStoreRangeNoSync(sp20, sp28);
+        DCStoreRangeNoSync(sp1C, sp2C);
+        sp30++;
     }
 }
 
