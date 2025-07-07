@@ -2240,10 +2240,13 @@ void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16
     view_class* view = dComIfGd_getView();
     mDoExt_3Dline_c* lines = field_0x18;
     f32 f = param_3 != 0 ? param_1 / param_3 : 0.0f;
-    for (u16 i = 0; i < m_lines; i++) {\
+    u32 g =  field_0x14  * 2;
+    u32 uVar1 = g * 12;
+    u32 uVar2 = g * 3;
+    for (s16 i = 0; i < m_lines; i++) {
         cXyz* c1 = lines->field_0x0;
-        cXyz* c2 = &lines->field_0x8[field_0x16];
-        u8* u1 = &lines->field_0x10[field_0x16];
+        cXyz* c2 = (&lines->field_0x8)[field_0x16];
+        u8* u1 = (&lines->field_0x10)[field_0x16];
         cXyz dist = c1[1] - c1[0];
         cXyz dist2 = c1[0] - view->lookat.eye;
         dist = dist.outprod(dist2);
@@ -2258,47 +2261,59 @@ void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16
         dist *= param_1;
         c2[0] = c1[0] + dist; 
         c2[1] = c1[0] - dist;
-        cXyz val1 = c1[1] + dist;
-        cXyz val2 = c1[1] - dist;
+        c1++;
+        cXyz val1 = c1[0] + dist;
+        cXyz val2 = c1[0] - dist;
         u8* u2 = u1 + 3;
-        cXyz* temp = c2;
+        u8* u3 = u1;
         f32 scale = param_1;
+        cXyz* temp = c2;
+        cXyz* temp2 = temp + 2;
         for(u16 j = field_0x14 - 2; j > 0; j--) {
-
+            cXyz* temp2 = temp + 2;
             if (j < param_3) {
                 scale -= f;
             }
 
-            dist = c1[2] - c1[1];
-            dist2 = c1[1] - view->lookat.eye;
+            dist = c1[1] - c1[0];
+            dist2 = c1[0] - view->lookat.eye;
             dist = dist.outprod(dist2);
             dist.normalize();
-            u1[6] = dist.x * 64.0f;
-            u1[7] = dist.y * 64.0f;
-            u1[8] = dist.z * 64.0f;
-            u1[9] = -dist.x;
-            u1[10] = -dist.y;
-            u1[11] = -dist.z;
+            u3[6] = dist.x * 64.0f;
+            u3[7] = dist.y * 64.0f;
+            u3[8] = dist.z * 64.0f;
+            u2[6] = -u3[6];
+            u2[7] = -u3[7];
+            u2[8] = -u3[8];
+            u2 += 6;
+            u3 += 6;
             dist *= scale;
-            val1 += c1[1] + dist;
-            val2 += c1[1] - dist;
-            *temp = val1 * 0.5f;
-            *c2 = val2 * 0.5f;
-            
+            val1 += c1[0] + dist;
+            val2 += c1[0] - dist;
+            temp[0] = val1 * 0.5f;
+            temp[1] = val2 * 0.5f;
+            c1++;
+            val1 = c1[0] + dist;
+            val2 = c1[0] - dist;
 
-
-
-            
-
-            
-        
+            temp = temp2;
+        }
+        u2[3] = u3[0];
+        u2[4] = u3[1];
+        u2[5] = u3[2];
+        u2[6] = u3[3];
+        u2[7] = u3[4];
+        u2[8] = u3[5];
+        if (param_3 == FALSE) {
+            temp2[0] = val1;
+            temp[3] = val2;
+        } else {
+            temp2[0] = c1[2];
+            temp[3] = c1[2];
         }
 
-
-
-
-        DCStoreRangeNoSync(c2, field_0x14*24);
-        DCStoreRangeNoSync(u1, field_0x14*6);
+        DCStoreRangeNoSync(c2, uVar1);
+        DCStoreRangeNoSync(u1, uVar2);
         lines = lines + 1;
     }
 
@@ -2321,8 +2336,9 @@ void mDoExt_3DlineMat0_c::update(int param_0, GXColor& param_1, dKy_tevstr_c* pa
 
     view_class* view_p = dComIfGd_getView();
     mDoExt_3Dline_c* sp30 = field_0x18;
-    int sp2C = field_0x14 * 2;
-    int sp28 = field_0x14 * 12;
+    int g = field_0x14 * 2;
+    int sp2C = g * 3;
+    int sp28 = g * 12;
 
     cXyz sp134;
     cXyz sp128;
@@ -2334,10 +2350,10 @@ void mDoExt_3DlineMat0_c::update(int param_0, GXColor& param_1, dKy_tevstr_c* pa
         f32* size_p = sp30->field_0x4;
         JUT_ASSERT(0x1545, size_p != 0);
 
-        cXyz* sp20 = &sp30->field_0x8[field_0x16];
+        cXyz* sp20 = *(&sp30->field_0x8 + field_0x16);
         cXyz* sp24 = sp20;
 
-        u8* sp1C = &sp30->field_0x10[field_0x16];
+        u8* sp1C = *(&sp30->field_0x10 + field_0x16);
 
         u8* var_r30 = sp1C;
         u8* var_r29 = var_r30 + 3;
