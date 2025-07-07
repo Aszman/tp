@@ -2058,7 +2058,7 @@ void mDoExt_invJntPacket::draw() {
 
 /* 800123D0-800125DC 00CD10 020C+00 2/2 0/0 0/0 .text            init__15mDoExt_3Dline_cFUsii */
 // NONMATCHING - regalloc, probably some types are wrong
-int mDoExt_3Dline_c::init(u16 param_0, int param_11, int param_2) {
+int mDoExt_3Dline_c::init(u16 param_0, int param_1, int param_2) {
     field_0x0 = new cXyz[param_0];
     if (field_0x0 == NULL) {
         return 0;
