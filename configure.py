@@ -47,7 +47,6 @@ VERSIONS = [
 
 # Versions to disable until properly configured
 DISABLED_VERSIONS = [
-    3,  # Wii USA Rev 0
     4,  # Wii USA Rev 2
     5,  # Wii PAL
     6,  # Wii JPN
@@ -246,6 +245,8 @@ cflags_base = [
 
 if config.version == "ShieldD":
     cflags_base.extend(["-O0", "-inline off", "-RTTI on", "-str reuse", "-enc SJIS", "-DDEBUG=1"])
+elif config.version == "RZDE01_00":
+    cflags_base.extend(["-O4,p", "-inline auto", "-ipa file", "-RTTI on", "-str reuse", "-enc SJIS"])
 else:
     cflags_base.extend(["-O4,p", "-inline auto", "-RTTI off", "-str reuse", "-multibyte"])
 
@@ -327,14 +328,17 @@ cflags_dolphin = [
 cflags_framework = [
     *cflags_base,
     "-use_lmw_stmw off",
-    "-inline noauto",
     "-schedule off",
     "-sym on",
     "-fp_contract off",
 ]
 
 if config.version != "ShieldD":
-    cflags_framework.extend(["-O3,s", "-sym on", "-str reuse,pool,readonly"])
+    if config.version == "RZDE01_00":
+        # TODO: whats the correct inlining flag? deferred looks better in some places, others not. something else wrong?
+        cflags_framework.extend(["-inline noauto", "-O4,s", "-sym on"])
+    else:
+        cflags_framework.extend(["-inline noauto", "-O3,s", "-sym on", "-str reuse,pool,readonly"])
 
 # REL flags
 cflags_rel = [
@@ -351,6 +355,8 @@ def MWVersion(cfg_version: str | None) -> str:
             return "GC/2.7"
         case "GZ2J01":
             return "GC/2.7"
+        case "RZDE01_00":
+            return "GC/3.0a5.2t"
         case "ShieldD":
             return "Wii/1.0"
         case _:
@@ -420,6 +426,7 @@ config.libs = [
             Object(MatchingFor("GZ2E01", "GZ2J01"), "m_Do/m_Do_printf.cpp"),
             Object(MatchingFor("GZ2E01", "GZ2J01"), "m_Do/m_Do_audio.cpp"),
             Object(MatchingFor("GZ2E01", "GZ2J01"), "m_Do/m_Do_controller_pad.cpp"),
+            Object(NonMatching, "m_Do/m_Re_controller_pad.cpp"),
             Object(Equivalent, "m_Do/m_Do_graphic.cpp"), # weak func order
             Object(NonMatching, "m_Do/m_Do_machine.cpp"),
             Object(MatchingFor("GZ2E01", "GZ2J01"), "m_Do/m_Do_mtx.cpp", extra_cflags=["-sym off"]),
@@ -520,6 +527,7 @@ config.libs = [
         "progress_category": "game",
         "host": True,
         "objects": [
+            Object(NonMatching, "d/d_home_button.cpp"),
             Object(MatchingFor("GZ2E01", "GZ2J01"), "d/d_stage.cpp", extra_cflags=['-pragma "nosyminline on"']),
             Object(MatchingFor("GZ2E01", "GZ2J01"), "d/d_map.cpp"),
             Object(MatchingFor("GZ2E01", "GZ2J01"), "d/d_com_inf_game.cpp", extra_cflags=['-pragma "nosyminline on"']),
@@ -645,7 +653,7 @@ config.libs = [
             Object(MatchingFor("GZ2E01", "GZ2J01"), "d/d_meter_map.cpp"),
             Object(MatchingFor("GZ2E01", "GZ2J01"), "d/d_meter_string.cpp"),
             Object(MatchingFor("GZ2E01"), "d/d_meter2_draw.cpp"),
-            Object(NonMatching, "d/d_meter2_info.cpp"),
+            Object(Equivalent, "d/d_meter2_info.cpp"),
             Object(MatchingFor("GZ2E01", "GZ2J01"), "d/d_meter2.cpp"),
             Object(MatchingFor("GZ2E01"), "d/d_msg_out_font.cpp"),
             Object(NonMatching, "d/d_msg_class.cpp"),
@@ -1468,7 +1476,7 @@ config.libs = [
     Rel("f_pc_profile_lst", [Object(Matching, "f_pc/f_pc_profile_lst.cpp")]),
     ActorRel(MatchingFor("GZ2E01"), "d_a_andsw"),
     ActorRel(NonMatching, "d_a_bg"),
-    ActorRel(NonMatching, "d_a_bg_obj"),
+    ActorRel(Equivalent, "d_a_bg_obj"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_dmidna"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_door_dbdoor00"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_door_knob00"),
@@ -1509,7 +1517,7 @@ config.libs = [
     ActorRel(MatchingFor("GZ2E01"), "d_a_tbox2"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_vrbox"),
     ActorRel(NonMatching, "d_a_vrbox2"),
-    ActorRel(NonMatching, "d_a_arrow"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_arrow"),
     ActorRel(NonMatching, "d_a_boomerang"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_crod"),
     ActorRel(NonMatching, "d_a_demo00"),
@@ -1527,14 +1535,14 @@ config.libs = [
     ActorRel(NonMatching, "d_a_bd"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_canoe"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_cstaF"),
-    ActorRel(NonMatching, "d_a_demo_item"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_demo_item"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_door_bossL1"),
     ActorRel(Equivalent, "d_a_e_dn"), # weak func order
     ActorRel(Equivalent, "d_a_e_fm"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_e_ga"),
     ActorRel(NonMatching, "d_a_e_hb"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_e_nest"),
-    ActorRel(NonMatching, "d_a_e_rd"),
+    ActorRel(Equivalent, "d_a_e_rd"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_econt"),
     ActorRel(NonMatching, "d_a_fr"),
     ActorRel(NonMatching, "d_a_grass"),
@@ -1543,7 +1551,7 @@ config.libs = [
     ActorRel(MatchingFor("GZ2E01"), "d_a_kytag11"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_kytag14"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_mg_fish"),
-    ActorRel(NonMatching, "d_a_npc_besu"),
+    ActorRel(Equivalent, "d_a_npc_besu"),  # weak func order
     ActorRel(Equivalent, "d_a_npc_fairy_seirei"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_npc_fish"),
     ActorRel(Equivalent, "d_a_npc_henna"), # weak func order
@@ -1654,7 +1662,7 @@ config.libs = [
     ActorRel(Equivalent, "d_a_e_dt"), # weak func order
     ActorRel(NonMatching, "d_a_e_fb"),
     ActorRel(NonMatching, "d_a_e_fk"),
-    ActorRel(NonMatching, "d_a_e_fs"),
+    ActorRel(Equivalent, "d_a_e_fs"), # weak func order
     ActorRel(Equivalent, "d_a_e_fz"), # weak func order
     ActorRel(NonMatching, "d_a_e_gb"),
     ActorRel(NonMatching, "d_a_e_ge"),
@@ -1689,7 +1697,7 @@ config.libs = [
     ActorRel(Equivalent, "d_a_e_pz", extra_cflags=['-pragma "nosyminline off"']), # weak func order, inline issue
     ActorRel(Equivalent, "d_a_e_rb"), # weak func order
     ActorRel(Equivalent, "d_a_e_rdb"), # weak func order
-    ActorRel(NonMatching, "d_a_e_rdy"),
+    ActorRel(Equivalent, "d_a_e_rdy"),  # weak func order
     ActorRel(NonMatching, "d_a_e_s1"),
     ActorRel(NonMatching, "d_a_e_sb"),
     ActorRel(NonMatching, "d_a_e_sf"),
@@ -1745,7 +1753,7 @@ config.libs = [
     ActorRel(NonMatching, "d_a_mg_fshop"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_mirror"),
     ActorRel(NonMatching, "d_a_movie_player", extra_cflags=["-O3,p"]),
-    ActorRel(NonMatching, "d_a_myna"),
+    ActorRel(Equivalent, "d_a_myna"), # weak function order
     ActorRel(NonMatching, "d_a_ni"),
     ActorRel(NonMatching, "d_a_npc_aru"),
     ActorRel(NonMatching, "d_a_npc_ash"),
@@ -1871,7 +1879,7 @@ config.libs = [
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_bbox"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_bed"),
     ActorRel(NonMatching, "d_a_obj_bemos"),
-    ActorRel(NonMatching, "d_a_obj_bhbridge"),
+    ActorRel(Equivalent, "d_a_obj_bhbridge"), # vtable order
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_bk_leaf"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_bky_rock"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_bmWindow"),
@@ -1927,15 +1935,15 @@ config.libs = [
     ActorRel(NonMatching, "d_a_obj_gm"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_goGate"),
     ActorRel(NonMatching, "d_a_obj_gomikabe"),
-    ActorRel(NonMatching, "d_a_obj_gra2"),
+    ActorRel(Equivalent, "d_a_obj_gra2"),  # weak function order
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_graWall"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_gra_rock"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_grave_stone"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_groundwater"),
     ActorRel(NonMatching, "d_a_obj_grz_rock"),
     ActorRel(NonMatching, "d_a_obj_h_saku"),
-    ActorRel(NonMatching, "d_a_obj_hakai_brl"),
-    ActorRel(NonMatching, "d_a_obj_hakai_ftr"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_obj_hakai_brl"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_obj_hakai_ftr"),
     ActorRel(NonMatching, "d_a_obj_hasu2"),
     ActorRel(NonMatching, "d_a_obj_hata"),
     ActorRel(NonMatching, "d_a_obj_hb"),
@@ -1943,7 +1951,7 @@ config.libs = [
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_heavySw"),
     ActorRel(NonMatching, "d_a_obj_hfuta"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_hsTarget"),
-    ActorRel(NonMatching, "d_a_obj_ice_l"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_obj_ice_l"),
     ActorRel(NonMatching, "d_a_obj_ice_s"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_iceblock"),
     ActorRel(NonMatching, "d_a_obj_iceleaf"),
@@ -1957,7 +1965,7 @@ config.libs = [
     ActorRel(NonMatching, "d_a_obj_kage"),
     ActorRel(NonMatching, "d_a_obj_kago"),
     ActorRel(NonMatching, "d_a_obj_kaisou"),
-    ActorRel(NonMatching, "d_a_obj_kamakiri"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_obj_kamakiri"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_kantera"),
     ActorRel(NonMatching, "d_a_obj_katatsumuri"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_kazeneko"),
@@ -2030,11 +2038,11 @@ config.libs = [
     ActorRel(NonMatching, "d_a_obj_lv8UdFloor"),
     ActorRel(NonMatching, "d_a_obj_lv9SwShutter"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_magLift"),
-    ActorRel(NonMatching, "d_a_obj_magLiftRot"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_obj_magLiftRot"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_maki"),
     ActorRel(NonMatching, "d_a_obj_master_sword"),
     ActorRel(NonMatching, "d_a_obj_mato"),
-    ActorRel(NonMatching, "d_a_obj_mhole"),
+    ActorRel(MatchingFor("GZ2E01"), "d_a_obj_mhole"),
     ActorRel(NonMatching, "d_a_obj_mie"),
     ActorRel(MatchingFor("GZ2E01"), "d_a_obj_mirror_6pole"),
     ActorRel(NonMatching, "d_a_obj_mirror_chain"),
