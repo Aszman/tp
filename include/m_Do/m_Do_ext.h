@@ -15,12 +15,6 @@ class JKRSolidHeap;
 struct ResTIMG;
 class Z2Creature;
 
-struct nXyz {
-    s8 x;
-    s8 y;
-    s8 z;
-};
-
 class mDoExt_baseAnm {
 public:
     mDoExt_baseAnm() {}
@@ -499,11 +493,11 @@ public:
     /* 800123D0 */ int init(u16, int, int);
     /* 800126BC */ mDoExt_3Dline_c();
 
-    /* 0x00 */ cXyz* field_0x0;
-    /* 0x04 */ f32* field_0x4;
+    /* 0x00 */ cXyz* mpPos;
+    /* 0x04 */ f32* mpSize;
     /* 0x08 */ cXyz* field_0x8;
     /* 0x0C */ cXyz* field_0xc;
-    /* 0x10 */ nXyz* field_0x10;
+    /* 0x10 */ S8Vec* field_0x10;
     /* 0x14 */ void* field_0x14;
     /* 0x18 */ f64* field_0x18;
     /* 0x1C */ f64* field_0x1c;
@@ -543,8 +537,8 @@ public:
     /* 800134F8 */ void setMaterial();
     /* 800135D0 */ void draw();
 
-    cXyz* getPos(int i_idx) { return mpLines[i_idx].field_0x0; }
-    f32* getSize(int i_idx) { return mpLines[i_idx].field_0x4; }
+    cXyz* getPos(int i_idx) { return mpLines[i_idx].mpPos; }
+    f32* getSize(int i_idx) { return mpLines[i_idx].mpSize; }
 
 private:
     /* 0x08 */ GXTexObj mTextureObject;
@@ -567,17 +561,17 @@ public:
     /* 800126C0 */ virtual void setMaterial();
     /* 80012774 */ virtual void draw();
 
-    cXyz* getPos(int param_0) { return field_0x18[param_0].field_0x0; }
-    f32* getSize(int param_0) { return field_0x18[param_0].field_0x4; }
+    cXyz* getPos(int param_0) { return mpLines[param_0].mpPos; }
+    f32* getSize(int param_0) { return mpLines[param_0].mpSize; }
 
 private:
-    /* 0x08 */ GXColor field_0x8;
-    /* 0x0C */ dKy_tevstr_c* field_0xc;
-    /* 0x10 */ u16 m_lines;
+    /* 0x08 */ GXColor mColor;
+    /* 0x0C */ dKy_tevstr_c* mpTevStr;
+    /* 0x10 */ u16 mNumLines;
     /* 0x12 */ u16 field_0x12;
     /* 0x14 */ u16 field_0x14;
-    /* 0x16 */ u8 field_0x16;
-    /* 0x18 */ mDoExt_3Dline_c* field_0x18;
+    /* 0x16 */ u8 mIsDrawn;
+    /* 0x18 */ mDoExt_3Dline_c* mpLines;
 };
 
 class mDoExt_cubePacket : public J3DPacket {

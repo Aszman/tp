@@ -2,6 +2,7 @@
  * m_Do_ext.cpp
  * Model, Animation, and Heap Functions
  */
+// #pragma sym off
 
 #include "m_Do/m_Do_ext.h"
 #include "JSystem/J3DGraphBase/J3DDrawBuffer.h"
@@ -68,6 +69,7 @@ static void mDoExt_setJ3DData(Mtx mtx, const J3DTransformInfo* transformInfo, u1
     J3DSys::mParentS.z = transformInfo->mScale.z;
 }
 
+#ifdef DEBUG
 static BOOL isCurrentSolidHeap() {
     JKRHeap* heap = JKRGetCurrentHeap();
     if (heap->getHeapType() != 'SLID') {
@@ -76,6 +78,7 @@ static BOOL isCurrentSolidHeap() {
     }
     return TRUE;
 }
+#endif
 
 /* 8000D320-8000D428 007C60 0108+00 6/6 0/0 0/0 .text            initPlay__14mDoExt_baseAnmFsifss */
 int mDoExt_baseAnm::initPlay(s16 i_frameMax, int i_attribute, f32 i_rate, s16 i_startF,
@@ -2059,22 +2062,21 @@ void mDoExt_invJntPacket::draw() {
 /* 800123D0-800125DC 00CD10 020C+00 2/2 0/0 0/0 .text            init__15mDoExt_3Dline_cFUsii */
 // NONMATCHING - regalloc, probably some types are wrong
 int mDoExt_3Dline_c::init(u16 param_0, int param_1, int param_2) {
-    field_0x0 = new cXyz[param_0];
-    if (field_0x0 == NULL) {
+    mpPos = new cXyz[param_0];
+    if (mpPos == NULL) {
         return 0;
     }
     
     if (param_1 != 0) {
-        field_0x4 = new f32[param_1];
-        if (field_0x4 == NULL) {
+        mpSize = new f32[param_1];
+        if (mpSize == NULL) {
             return 0;
         }
     } else {
-        field_0x4 = NULL;
+        mpSize = NULL;
     }
     
     s32 sp20 = param_0 * 2;
-
 
     field_0x8 = new cXyz[sp20];
     if (field_0x8 == NULL) {
@@ -2086,12 +2088,12 @@ int mDoExt_3Dline_c::init(u16 param_0, int param_1, int param_2) {
         return 0;
     }
 
-    field_0x10 = new nXyz[sp20];
+    field_0x10 = new S8Vec[sp20];
     if (field_0x10 == NULL) {
         return 0;
     }
 
-    field_0x14 = new nXyz[sp20];
+    field_0x14 = new S8Vec[sp20];
     if (field_0x14 == NULL) {
         return 0;
     }
@@ -2126,24 +2128,24 @@ int mDoExt_3Dline_c::init(u16 param_0, int param_1, int param_2) {
 
 /* 800125E0-800126BC 00CF20 00DC+00 0/0 0/0 12/12 .text            init__19mDoExt_3DlineMat0_cFUsUsi
  */
-int mDoExt_3DlineMat0_c::init(u16 param_0, u16 param_1, int param_2) {
-    m_lines = param_0;
+int mDoExt_3DlineMat0_c::init(u16 i_numLines, u16 param_1, int param_2) {
+    mNumLines = i_numLines;
     field_0x12 = param_1;
 
-    field_0x18 = new mDoExt_3Dline_c[param_0];
-    if (field_0x18 == NULL) {
-        return 0;
+    mpLines = new mDoExt_3Dline_c[i_numLines];
+    if (mpLines == NULL) {
+        return FALSE;
     }
 
-    for (int i = 0; i < param_0; i++) {
-        if (!field_0x18[i].init(param_1, param_2, 0)) {
-            return 0;
+    for (int i = 0; i < i_numLines; i++) {
+        if (!mpLines[i].init(param_1, param_2, 0)) {
+            return FALSE;
         }
     }
 
     field_0x4 = NULL;
-    field_0x16 = 0;
-    return 1;
+    mIsDrawn = 0;
+    return TRUE;
 }
 
 /* 800126BC-800126C0 00CFFC 0004+00 2/2 0/0 0/0 .text            __ct__15mDoExt_3Dline_cFv */
@@ -2192,44 +2194,44 @@ void mDoExt_3DlineMat0_c::setMaterial() {
 }
 
 /* 80012774-80012874 00D0B4 0100+00 1/0 0/0 0/0 .text            draw__19mDoExt_3DlineMat0_cFv */
-// NONMATCHING - issues with the iterators
 void mDoExt_3DlineMat0_c::draw() {
-    GXSetTevColor(GX_TEVREG2, field_0x8);
+    GXSetTevColor(GX_TEVREG2, mColor);
 
-    if (field_0xc != NULL) {
-        dKy_Global_amb_set(field_0xc);
+    if (mpTevStr != NULL) {
+        dKy_Global_amb_set(mpTevStr);
     }
 
-    mDoExt_3Dline_c* var_r28 = field_0x18;
-    int var_r26 = (field_0x14 & 0x7FFF) << 1;
+    mDoExt_3Dline_c* lines_p = mpLines;
+    s32 var_r26 = (field_0x14 & 0x7FFF) << 1;
 
-    for (int i = 0; i < m_lines; i++) {
-        GXSetArray(GX_VA_POS, var_r28[field_0x16].field_0x8, sizeof(cXyz));
-        GXSetArray(GX_VA_NRM, var_r28[field_0x16].field_0x10, 3);
+    for (s32 i = 0; i < mNumLines; i++) {
+        GXSetArray(GX_VA_POS, (&lines_p->field_0x8)[mIsDrawn], sizeof(cXyz));
+        GXSetArray(GX_VA_NRM, (&lines_p->field_0x10)[mIsDrawn], sizeof(S8Vec));
 
         GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, var_r26);
-        for (u16 j = 0; j < (u16)var_r26;) {
-            GXPosition1x16(j);
-            GXNormal1x16(j);
-            j++;
 
+        s32 tempJ;
+        for (s32 j = 0; (u16)j < (u32)var_r26; j = tempJ + 1) {
             GXPosition1x16(j);
             GXNormal1x16(j);
-            j++;
+            tempJ = j+ 1;
+            GXPosition1x16(tempJ);
+            GXNormal1x16(tempJ);
         }
         GXEnd();
-        var_r28++;
+        lines_p++;
     }
 
-    field_0x16 ^= 1;
+    mIsDrawn ^= 1;
 }
 
 /* 80012874-80012E3C 00D1B4 05C8+00 0/0 0/0 2/2 .text
  * update__19mDoExt_3DlineMat0_cFifR8_GXColorUsP12dKy_tevstr_c  */
-void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16 param_3,
-                                     dKy_tevstr_c* param_4) {
-    field_0x8 = param_2;
-    field_0xc = param_4;
+void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& i_color, u16 param_3,
+                                     dKy_tevstr_c* i_tevStr) {
+    mColor = i_color;
+    mpTevStr = i_tevStr;
+
     if (param_0 < 0) {
         field_0x14 = field_0x12;
     } else if (param_0 > field_0x12) {
@@ -2238,115 +2240,113 @@ void mDoExt_3DlineMat0_c::update(int param_0, f32 param_1, GXColor& param_2, u16
         field_0x14 = param_0;
     }
     
-    view_class* view = dComIfGd_getView();
-    mDoExt_3Dline_c* lines = field_0x18;
+    view_class* view_p = dComIfGd_getView();
+    mDoExt_3Dline_c* lines_p = mpLines;
 
-    f32 f = param_3 != 0 ? param_1 / param_3 : 0.0f;
+    f32 scale_part = param_3 != 0 ? param_1 / param_3 : 0.0f;
     u32 uVar1 = field_0x14 * 2 * sizeof(cXyz);
-    u32 uVar2 = field_0x14 * 2 * sizeof(nXyz);
+    u32 uVar2 = field_0x14 * 2 * sizeof(S8Vec);
     
     cXyz* pos_p;
-    cXyz* temp;
-    cXyz* c2;
-    nXyz* n2;
-    nXyz* n3;
-    nXyz* n1;
-    for (int i = 0; i < m_lines; i++) {
-        pos_p = lines->field_0x0;
-        c2 = (&lines->field_0x8)[field_0x16];
-        temp = c2;
-        n1 = (&lines->field_0x10)[field_0x16];
+    cXyz* xyz2;
+    cXyz* xyz1;
+    S8Vec* vec2;
+    S8Vec* vec3;
+    S8Vec* vec1;
+    for (int i = 0; i < mNumLines; i++) {
+        pos_p = lines_p->mpPos;
+        xyz1 = (&lines_p->field_0x8)[mIsDrawn];
+        xyz2 = xyz1;
+        vec1 = (&lines_p->field_0x10)[mIsDrawn];
 
-        n2 = n1;
-        n3 = n1 + 1;
+        vec2 = vec1;
+        vec3 = vec1 + 1;
         
         f32 scale = param_1;
 
-        cXyz dist2;
-        cXyz dist;
-        dist = pos_p[1] - pos_p[0];
-        dist2 = pos_p[0] - view->lookat.eye;
-        dist = dist.outprod(dist2);
-        dist.normalizeZP();
-        n2->x = dist.x * 64.0f;
-        n2->y = dist.y * 64.0f;
-        n2->z = dist.z * 64.0f;
-        n3->x = -n2->x;
-        n3->y = -n2->y;
-        n3->z = -n2->z;
+        cXyz diff2;
+        cXyz diff1;
+        diff1 = pos_p[1] - pos_p[0];
+        diff2 = pos_p[0] - view_p->lookat.eye;
+        diff1 = diff1.outprod(diff2);
+        diff1.normalizeZP();
+        vec2->x = diff1.x * 64.0f;
+        vec2->y = diff1.y * 64.0f;
+        vec2->z = diff1.z * 64.0f;
+        vec3->x = -vec2->x;
+        vec3->y = -vec2->y;
+        vec3->z = -vec2->z;
 
-        dist *= param_1;
-        c2[0] = pos_p[0] + dist; 
-        c2[1] = pos_p[0] - dist;
+        diff1 *= param_1;
+        xyz1[0] = pos_p[0] + diff1; 
+        xyz1[1] = pos_p[0] - diff1;
         pos_p++;
-        temp += 2;
+        xyz2 += 2;
         
-        cXyz val1 = pos_p[0] + dist;
-        cXyz val2 = pos_p[0] - dist;
+        cXyz val1 = pos_p[0] + diff1;
+        cXyz val2 = pos_p[0] - diff1;
 
         for(int j = field_0x14 - 2; j > 0; j--) {
             if (j < param_3) {
-                scale -= f;
+                scale -= scale_part;
             }
 
 
-            dist = pos_p[1] - pos_p[0];
-            dist2 = pos_p[0] - view->lookat.eye;
-            dist = dist.outprod(dist2);
-            dist.normalizeZP();
-            n2[2].x = dist.x * 64.0f;
-            n2[2].y = dist.y * 64.0f;
-            n2[2].z = dist.z * 64.0f;
-            n3[2].x = -n2[2].x;
-            n3[2].y = -n2[2].y;
-            n3[2].z = -n2[2].z;
-            n2 += 2;
-            n3 += 2;
-            dist *= scale;
+            diff1 = pos_p[1] - pos_p[0];
+            diff2 = pos_p[0] - view_p->lookat.eye;
+            diff1 = diff1.outprod(diff2);
+            diff1.normalizeZP();
+            vec2[2].x = diff1.x * 64.0f;
+            vec2[2].y = diff1.y * 64.0f;
+            vec2[2].z = diff1.z * 64.0f;
+            vec3[2].x = -vec2[2].x;
+            vec3[2].y = -vec2[2].y;
+            vec3[2].z = -vec2[2].z;
+            vec2 += 2;
+            vec3 += 2;
+            diff1 *= scale;
 
-    
-            val1 += pos_p[0] + dist;
-            val2 += pos_p[0] - dist;
-            temp[0] = val1 * 0.5f;
-            temp[1] = val2 * 0.5f;
+            val1 += pos_p[0] + diff1;
+            val2 += pos_p[0] - diff1;
+            xyz2[0] = val1 * 0.5f;
+            xyz2[1] = val2 * 0.5f;
             pos_p++;
-            temp += 2;
-            val1 = pos_p[0] + dist;
-            val2 = pos_p[0] - dist;
+            xyz2 += 2;
+            val1 = pos_p[0] + diff1;
+            val2 = pos_p[0] - diff1;
 
 
         }
-        n3 += 1;
-        n3->x = n2->x;
-        n3->y = n2->y;
-        n3->z = n2->z;
+        vec3 += 1;
+        vec3->x = vec2->x;
+        vec3->y = vec2->y;
+        vec3->z = vec2->z;
 
-        n3 += 1;
-        n2 += 1;
-        n3->x = n2->x;
-        n3->y = n2->y;
-        n3->z = n2->z;
+        vec3 += 1;
+        vec2 += 1;
+        vec3->x = vec2->x;
+        vec3->y = vec2->y;
+        vec3->z = vec2->z;
 
         if (param_3 != 0) {
-            temp[0] = pos_p[0];
-            temp[1] = pos_p[0];
+            xyz2[0] = pos_p[0];
+            xyz2[1] = pos_p[0];
         } else {
-            temp[0] = val1;
-            temp[1] = val2;
+            xyz2[0] = val1;
+            xyz2[1] = val2;
         }
 
-        DCStoreRangeNoSync(c2, uVar1);
-        DCStoreRangeNoSync(n1, uVar2);
-        lines++;
+        DCStoreRangeNoSync(xyz1, uVar1);
+        DCStoreRangeNoSync(vec1, uVar2);
+        lines_p++;
     }
 }
 
 /* 80012E3C-80013360 00D77C 0524+00 0/0 0/0 9/9 .text
  * update__19mDoExt_3DlineMat0_cFiR8_GXColorP12dKy_tevstr_c     */
-// NONMATCHING
-void mDoExt_3DlineMat0_c::update(int param_0, GXColor& param_1, dKy_tevstr_c* param_2) {
-    field_0x8 = param_1;
-    field_0xc = param_2;
+void mDoExt_3DlineMat0_c::update(int param_0, GXColor& i_color, dKy_tevstr_c* i_tevStr) {
+    mColor = i_color;
+    mpTevStr = i_tevStr;
 
     if (param_0 < 0) {
         field_0x14 = field_0x12;
@@ -2357,110 +2357,133 @@ void mDoExt_3DlineMat0_c::update(int param_0, GXColor& param_1, dKy_tevstr_c* pa
     }
 
     view_class* view_p = dComIfGd_getView();
-    mDoExt_3Dline_c* sp30 = field_0x18;
-    u32 sp28 = field_0x14 * 2 * sizeof(cXyz);
-    u32 sp2C = field_0x14 * 2 * sizeof(nXyz);
+    mDoExt_3Dline_c* lines_p = mpLines;
+
+    u32 uVar1 = field_0x14 * 2 * sizeof(cXyz);
+    u32 uVar2 = field_0x14 * 2 * sizeof(S8Vec);
 
     cXyz* pos_p;
-    cXyz* sp26;
-    cXyz* sp20;
-    nXyz* var_r30;
-    nXyz* var_r29;
-    nXyz* sp1C;
+    cXyz* xyz2;
+    cXyz* xyz1;
+    S8Vec* vec2;
+    S8Vec* vec3;
+    S8Vec* vec1;
     f32* size_p;
-    for (int i = 0; i < m_lines; i++) {
-        pos_p = sp30->field_0x0;
-        size_p = sp30->field_0x4;
+    for (int i = 0; i < mNumLines; i++) {
+        pos_p = lines_p->mpPos;
+        size_p = lines_p->mpSize;
         JUT_ASSERT(0x1545, size_p != 0);
         
-        sp20 = (&sp30->field_0x8)[field_0x16];
-        sp26 = sp20;
-        sp1C = (&sp30->field_0x10)[field_0x16];
+        xyz1 = (&lines_p->field_0x8)[mIsDrawn];
+        xyz2 = xyz1;
+        vec1 = (&lines_p->field_0x10)[mIsDrawn];
 
-        var_r30 = sp1C;
-        var_r29 = var_r30 + 1;
+        vec2 = vec1;
+        vec3 = vec2 + 1;
 
-        cXyz sp134;
-        cXyz sp128;
-        sp128 = pos_p[1] - pos_p[0];
-        sp134 = pos_p[0] - view_p->lookat.eye;
-        sp128 = sp128.outprod(sp134);
-        sp128.normalizeZP();
+        cXyz diff2;
+        cXyz diff1;
+        diff1 = pos_p[1] - pos_p[0];
+        diff2 = pos_p[0] - view_p->lookat.eye;
+        diff1 = diff1.outprod(diff2);
+        diff1.normalizeZP();
 
-        var_r30->x = sp128.x * 64.0f;
-        var_r30->y = sp128.y * 64.0f;
-        var_r30->z = sp128.z * 64.0f;
-        var_r29->x = -sp1C->x;
-        var_r29->y = -sp1C->y;
-        var_r29->z = -sp1C->z;
+        vec2->x = diff1.x * 64.0f;
+        vec2->y = diff1.y * 64.0f;
+        vec2->z = diff1.z * 64.0f;
+        vec3->x = -vec1->x;
+        vec3->y = -vec1->y;
+        vec3->z = -vec1->z;
         
 
-        sp128 *= *size_p;
-        sp20[0] = pos_p[0] + sp128;
-        sp20[1] = pos_p[0] - sp128;
+        diff1 *= *size_p;
+        xyz1[0] = pos_p[0] + diff1;
+        xyz1[1] = pos_p[0] - diff1;
         pos_p++;
-        sp26 += 2;
+        xyz2 += 2;
         size_p++;
         
-        cXyz sp11C = pos_p[0] + sp128;
-        cXyz sp110 = pos_p[0] - sp128;
+        cXyz val1 = pos_p[0] + diff1;
+        cXyz val2 = pos_p[0] - diff1;
         
         for (int sp10 = field_0x14 - 2; sp10 > 0; sp10--) {
-            sp128 = pos_p[1] - pos_p[0];
-            sp134 = pos_p[0] - view_p->lookat.eye;
-            sp128 = sp128.outprod(sp134);
-            sp128.normalizeZP();
+            diff1 = pos_p[1] - pos_p[0];
+            diff2 = pos_p[0] - view_p->lookat.eye;
+            diff1 = diff1.outprod(diff2);
+            diff1.normalizeZP();
 
-            var_r30 += 2;
-            var_r29 += 2;
+            vec2 += 2;
+            vec3 += 2;
 
-            var_r30->x = sp128.x * 64.0f;
-            var_r30->y = sp128.y * 64.0f;
-            var_r30->z = sp128.z * 64.0f;
-            var_r29->x = -var_r30->x;
-            var_r29->y = -var_r30->y;
-            var_r29->z = -var_r30->z;
+            vec2->x = diff1.x * 64.0f;
+            vec2->y = diff1.y * 64.0f;
+            vec2->z = diff1.z * 64.0f;
+            vec3->x = -vec2->x;
+            vec3->y = -vec2->y;
+            vec3->z = -vec2->z;
 
-            sp128 *= *size_p;
-            sp11C += pos_p[0] + sp128;
-            sp110 += pos_p[0] - sp128;
-            sp26[0] = sp11C * 0.5f;
-            sp26[1] = sp110 * 0.5f;
+            diff1 *= *size_p;
+            val1 += pos_p[0] + diff1;
+            val2 += pos_p[0] - diff1;
+            xyz2[0] = val1 * 0.5f;
+            xyz2[1] = val2 * 0.5f;
             
             pos_p++;
-            sp26 += 2;
+            xyz2 += 2;
             size_p++;
             
-            sp11C = pos_p[0] + sp128;
-            sp110 = pos_p[0] - sp128;
+            val1 = pos_p[0] + diff1;
+            val2 = pos_p[0] - diff1;
         }
 
-        var_r29 += 1;
+        vec3 += 1;
 
-        var_r29->x = var_r30->x;
-        var_r29->y = var_r30->y;
-        var_r29->z = var_r30->z;
+        vec3->x = vec2->x;
+        vec3->y = vec2->y;
+        vec3->z = vec2->z;
 
-        var_r30 += 1;
-        var_r29 += 1;
+        vec2 += 1;
+        vec3 += 1;
 
-        var_r29->x = var_r30->x;
-        var_r29->y = var_r30->y;
-        var_r29->z = var_r30->z;
+        vec3->x = vec2->x;
+        vec3->y = vec2->y;
+        vec3->z = vec2->z;
 
-        sp26[0] = sp11C;
-        sp26[1] = sp110;
+        xyz2[0] = val1;
+        xyz2[1] = val2;
 
-        DCStoreRangeNoSync(sp20, sp28);
-        DCStoreRangeNoSync(sp1C, sp2C);
-        sp30++;
+        DCStoreRangeNoSync(xyz1, uVar1);
+        DCStoreRangeNoSync(vec1, uVar2);
+        lines_p++;
     }
 }
 
 /* 80013360-800134F8 00DCA0 0198+00 0/0 0/0 19/19 .text init__19mDoExt_3DlineMat1_cFUsUsP7ResTIMGi
  */
-int mDoExt_3DlineMat1_c::init(u16 param_0, u16 param_1, ResTIMG* param_2, int param_3) {
-    // NONMATCHING
+int mDoExt_3DlineMat1_c::init(u16 i_numLines, u16 param_1, ResTIMG* param_2, int param_3) {
+    mNumLines = i_numLines;
+    field_0x32 = param_1;
+
+    mpLines = new mDoExt_3Dline_c[i_numLines];
+    if (mpLines == NULL) {
+        return FALSE;
+    }
+
+    for (int i = 0; i < i_numLines; i++) {
+        if (!mpLines[i].init(param_1, param_3, 1)) {
+            return FALSE;
+        }
+    }
+
+    field_0x4 = NULL;
+    mIsDrawn = 0;
+    GXInitTexObj(&mTextureObject, (u8*)param_2 + param_2->imageOffset, param_2->width, 
+        param_2->height, (GXTexFmt)param_2->format, (GXTexWrapMode)param_2->wrapS,
+        (GXTexWrapMode) param_2->wrapT, param_2->mipmapCount > 1);
+     GXInitTexObjLOD(&mTextureObject, (GXTexFilter)param_2->minFilter, (GXTexFilter)param_2->magFilter, 
+        param_2->minLOD * 0.125f, param_2->maxLOD * 0.125f, param_2->LODBias * 0.01f, 
+        param_2->biasClamp, param_2->doEdgeLOD, (GXAnisotropy)param_2->maxAnisotropy);
+    return TRUE;
 }
 
 /* 800134F8-800135D0 00DE38 00D8+00 1/0 0/0 0/0 .text setMaterial__19mDoExt_3DlineMat1_cFv */
@@ -2482,7 +2505,6 @@ void mDoExt_3DlineMat1_c::setMaterial() {
 }
 
 /* 800135D0-8001373C 00DF10 016C+00 1/0 0/0 0/0 .text            draw__19mDoExt_3DlineMat1_cFv */
-// NONMATCHING- some smaller issues
 void mDoExt_3DlineMat1_c::draw() {
     GXLoadTexObj(&mTextureObject, GX_TEXMAP0);
     GXSetTexCoordScaleManually(GX_TEXCOORD0, 1, GXGetTexObjWidth(&mTextureObject), GXGetTexObjHeight(&mTextureObject));
@@ -2493,13 +2515,13 @@ void mDoExt_3DlineMat1_c::draw() {
     mDoExt_3Dline_c* lines = mpLines;
     s32 vert_num = (field_0x34 & 0x7fff) << 1;
     for (s32 i = 0; i < mNumLines; i++) {
-        GXSetArray(GX_VA_POS, lines[mIsDrawn].field_0x8, 0xC);
-        GXSetArray(GX_VA_NRM, lines[mIsDrawn].field_0x10, 0x3);
-        GXSetArray(GX_VA_TEX0, lines[mIsDrawn].field_0x18, 0x8);
+        GXSetArray(GX_VA_POS, (&lines->field_0x8)[mIsDrawn], sizeof(cXyz));
+        GXSetArray(GX_VA_NRM, (&lines->field_0x10)[mIsDrawn], sizeof(S8Vec));
+        GXSetArray(GX_VA_TEX0, (&lines->field_0x18)[mIsDrawn], sizeof(f64));
         GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, vert_num);
 
-        s16 tempJ;
-        for (u32 j = 0; j < (u32)field_0x34; j += 1) {
+        s32 tempJ;
+        for (s32 j = 0; (u16)j < (u32)vert_num; j = tempJ + 1) {
             GXPosition1x16(j);
             GXNormal1x16(j);
             GXTexCoord1x16(j);
@@ -2517,15 +2539,286 @@ void mDoExt_3DlineMat1_c::draw() {
 
 /* 8001373C-80013FB0 00E07C 0874+00 0/0 0/0 6/6 .text
  * update__19mDoExt_3DlineMat1_cFifR8_GXColorUsP12dKy_tevstr_c  */
-void mDoExt_3DlineMat1_c::update(int param_0, f32 param_1, _GXColor& param_2, u16 param_3,
-                                     dKy_tevstr_c* param_4) {
-    // NONMATCHING
+void mDoExt_3DlineMat1_c::update(int param_0, f32 param_1, _GXColor& i_color, u16 param_3,
+                                     dKy_tevstr_c* i_tevStr) {
+    mColor = i_color;
+    mpTevStr = i_tevStr;
+
+    if (param_0 < 0) {
+        field_0x34 = field_0x32;
+    } else if (param_0 > field_0x32) {
+        field_0x34 = field_0x32;
+    } else {
+        field_0x34 = param_0;
+    }
+
+    view_class* view_p = dComIfGd_getView();
+    mDoExt_3Dline_c* lines_p = mpLines;
+    f32 scale_part = param_3 != 0 ? param_1 / param_3 : 0.0f;
+    
+    u32 uVar1 = field_0x34 * 2 * sizeof(cXyz);
+    u32 uVar2 = field_0x34 * 2 * sizeof(S8Vec);
+    u32 uVar3 = field_0x34 * 2 * sizeof(f64);
+    f32 scale;
+    f32 f2 = 0.0f; 
+    
+    cXyz* pos_p;
+    cXyz* xyz2;
+    cXyz* xyz1;
+    S8Vec* vec2;
+    S8Vec* vec3;
+    S8Vec* vec1;
+    f32* f1_2;
+    f32* f1;
+    
+    for (int i = 0; i < mNumLines; i++) {
+        pos_p = lines_p->mpPos;
+        xyz1 = (&lines_p->field_0x8)[mIsDrawn];
+        xyz2 = xyz1;
+        vec1 = (&lines_p->field_0x10)[mIsDrawn];
+        vec2 = vec1;
+        vec3 = vec1 + 1;
+        
+        f1 = (f32*) (&lines_p->field_0x18)[mIsDrawn];
+        f1_2 = f1;
+        f1_2 += 4;
+        scale = param_1;
+        f1[1] = f2;
+        f1[3] = f2;
+        
+        cXyz diff2;
+        cXyz diff1;
+        diff1 = pos_p[1] - pos_p[0];
+        f32 f3 = diff1.abs();
+
+        // this ternary operation fixes the issue with float positioning
+        param_1 < 8.0f ? (f2 += f3 = 0.1f * f3) : (f3 = 0.02f * f3, f2 +=  f3 * (8.0f / param_1));
+
+        diff2 = pos_p[0] - view_p->lookat.eye;
+        diff1 = diff1.outprod(diff2);
+        diff1.normalizeZP();
+        vec2->x = diff1.x * 64.0f;
+        vec2->y = diff1.y * 64.0f;
+        vec2->z = diff1.z * 64.0f;
+        vec3->x = -vec2->x;
+        vec3->y = -vec2->y;
+        vec3->z = -vec2->z;
+
+        diff1 *= param_1;
+        xyz1[0] = pos_p[0] + diff1; 
+        xyz1[1] = pos_p[0] - diff1;
+
+        pos_p++;
+        xyz2 += 2;
+        
+        cXyz val1 = pos_p[0] + diff1;
+        cXyz val2 = pos_p[0] - diff1;
+
+
+
+        for(int j = field_0x34 - 2; j > 0; j--) {
+            if (j < param_3) {
+                scale -= scale_part;
+            }
+            f1_2[1] = f2;
+            f1_2[3] = f2;
+            f1_2 += 4;
+
+            diff1 = pos_p[1] - pos_p[0];
+            f32 f3 = diff1.abs();
+            param_1 < 8.0f ? (f2 += f3 = 0.1f * f3) : (f3 = 0.02f * f3, f2 +=  f3 * (8.0f / param_1));
+
+            diff2 = pos_p[0] - view_p->lookat.eye;
+            diff1 = diff1.outprod(diff2);
+            diff1.normalizeZP();
+            vec2[2].x = diff1.x * 64.0f;
+            vec2[2].y = diff1.y * 64.0f;
+            vec2[2].z = diff1.z * 64.0f;
+            vec3[2].x = -vec2[2].x;
+            vec3[2].y = -vec2[2].y;
+            vec3[2].z = -vec2[2].z;
+            vec2 += 2;
+            vec3 += 2;
+            diff1 *= scale;
+
+            val1 += pos_p[0] + diff1;
+            val2 += pos_p[0] - diff1;
+            xyz2[0] = val1 * 0.5f;
+            xyz2[1] = val2 * 0.5f;
+            pos_p++;
+            xyz2 += 2;
+            val1 = pos_p[0] + diff1;
+            val2 = pos_p[0] - diff1;
+        }
+        f1_2[1] = f2;
+        f1_2[3] = f2;
+
+        vec3 += 1;
+        vec3->x = vec2->x;
+        vec3->y = vec2->y;
+        vec3->z = vec2->z;
+
+        vec3 += 1;
+        vec2 += 1;
+        vec3->x = vec2->x;
+        vec3->y = vec2->y;
+        vec3->z = vec2->z;
+
+        if (param_3 != 0) {
+            xyz2[0] = pos_p[0];
+            xyz2[1] = pos_p[0];
+        } else {
+            xyz2[0] = val1;
+            xyz2[1] = val2;
+        }
+        
+        DCStoreRangeNoSync(xyz1, uVar1);
+        DCStoreRangeNoSync(vec1, uVar2);
+        DCStoreRangeNoSync(f1, uVar3);
+        lines_p++;
+     }
 }
 
 /* 80013FB0-80014738 00E8F0 0788+00 0/0 0/0 14/14 .text
  * update__19mDoExt_3DlineMat1_cFiR8_GXColorP12dKy_tevstr_c     */
-void mDoExt_3DlineMat1_c::update(int param_0, _GXColor& param_1, dKy_tevstr_c* param_2) {
-    // NONMATCHING
+void mDoExt_3DlineMat1_c::update(int param_0, _GXColor& i_color, dKy_tevstr_c* i_tevStr) {
+    mColor = i_color;
+    mpTevStr = i_tevStr;
+
+    if (param_0 < 0) {
+        field_0x34 = field_0x32;
+    } else if (param_0 > field_0x32) {
+        field_0x34 = field_0x32;
+    } else {
+        field_0x34 = param_0;
+    }
+
+    view_class* view_p = dComIfGd_getView();
+    mDoExt_3Dline_c* lines_p = mpLines;
+    
+    u32 uVar1 = field_0x34 * 2 * sizeof(cXyz);
+    u32 uVar2 = field_0x34 * 2 * sizeof(S8Vec);
+    u32 uVar3 = field_0x34 * 2 * sizeof(f64);
+    f32 scale;
+    f32 f2 = 0.0f; 
+    
+    cXyz* pos_p;
+    cXyz* xyz2;
+    cXyz* xyz1;
+    S8Vec* vec2;
+    S8Vec* vec3;
+    S8Vec* vec1;
+    f32* f1_2;
+    f32* f1;
+    f32* size_p;
+    
+    for (int i = 0; i < mNumLines; i++) {
+        pos_p = lines_p->mpPos;
+        size_p = lines_p->mpSize;
+        JUT_ASSERT(0x16f3, size_p != 0);
+
+        xyz1 = (&lines_p->field_0x8)[mIsDrawn];
+        xyz2 = xyz1;
+        vec1 = (&lines_p->field_0x10)[mIsDrawn];
+        vec2 = vec1;
+        vec3 = vec1 + 1;
+        
+        f1 = (f32*) (&lines_p->field_0x18)[mIsDrawn];
+        f1_2 = f1;
+        f1_2 += 4;
+        f1[1] = f2;
+        f1[3] = f2;
+        
+        cXyz diff2;
+        cXyz diff1;
+        diff1 = pos_p[1] - pos_p[0];
+        f32 f3 = diff1.abs();
+        f3 = 0.1f * f3;
+        f2 += f3;
+
+
+
+        diff2 = pos_p[0] - view_p->lookat.eye;
+        diff1 = diff1.outprod(diff2);
+        diff1.normalizeZP();
+        vec2->x = diff1.x * 64.0f;
+        vec2->y = diff1.y * 64.0f;
+        vec2->z = diff1.z * 64.0f;
+        vec3->x = -vec2->x;
+        vec3->y = -vec2->y;
+        vec3->z = -vec2->z;
+
+        diff1 *= *size_p;
+        xyz1[0] = pos_p[0] + diff1; 
+        xyz1[1] = pos_p[0] - diff1;
+
+        pos_p++;
+        xyz2 += 2;
+        size_p++;
+        
+        cXyz val1 = pos_p[0] + diff1;
+        cXyz val2 = pos_p[0] - diff1;
+
+
+        for(int j = field_0x34 - 2; j > 0; j--) {
+            f1_2[1] = f2;
+            f1_2[3] = f2;
+            f1_2 += 4;
+
+            diff1 = pos_p[1] - pos_p[0];
+            f32 f3 = diff1.abs();
+            f3 = 0.1f * f3;
+            f2 += f3;
+
+            diff2 = pos_p[0] - view_p->lookat.eye;
+            diff1 = diff1.outprod(diff2);
+            diff1.normalizeZP();
+            vec2[2].x = diff1.x * 64.0f;
+            vec2[2].y = diff1.y * 64.0f;
+            vec2[2].z = diff1.z * 64.0f;
+            vec3[2].x = -vec2[2].x;
+            vec3[2].y = -vec2[2].y;
+            vec3[2].z = -vec2[2].z;
+            vec2 += 2;
+            vec3 += 2;
+
+            diff1 *= *size_p;   
+            val1 += pos_p[0] + diff1;
+            val2 += pos_p[0] - diff1;
+            xyz2[0] = val1 * 0.5f;
+            xyz2[1] = val2 * 0.5f;
+
+            pos_p++;
+            xyz2 += 2;
+            size_p++;
+
+            val1 = pos_p[0] + diff1;
+            val2 = pos_p[0] - diff1;
+        }
+        f1_2[1] = f2;
+        f1_2[3] = f2;
+
+        vec3 += 1;
+        vec3->x = vec2->x;
+        vec3->y = vec2->y;
+        vec3->z = vec2->z;
+
+        vec3 += 1;
+        vec2 += 1;
+        vec3->x = vec2->x;
+        vec3->y = vec2->y;
+        vec3->z = vec2->z;
+
+
+        xyz2[0] = val1;
+        xyz2[1] = val2;
+        
+        
+        DCStoreRangeNoSync(xyz1, uVar1);
+        DCStoreRangeNoSync(vec1, uVar2);
+        DCStoreRangeNoSync(f1, uVar3);
+        lines_p++;
+     }
 }
 
 /* 80014738-8001479C 00F078 0064+00 0/0 0/0 29/29 .text
